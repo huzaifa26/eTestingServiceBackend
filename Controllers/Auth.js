@@ -1,6 +1,9 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import { pool } from '../index.js';
 import { genSaltSync, hashSync, compareSync } from 'bcrypt';
+import Jwt from 'jsonwebtoken';
+dotenv.config();
 
 export const login = (req, res) => {
   const { email, password } = req.body;
@@ -17,7 +20,27 @@ export const login = (req, res) => {
       } else {
         const xyz = compareSync(password, results[0].password);
         if (xyz) {
-          res.status(200).json({ user: 'Success' });
+          const token = Jwt.sign(
+            {
+              username: results[0].username,
+              userId: results[0].id,
+            },
+            process.env.SECRETKEY,
+            {
+              expiresIn: '7d',
+            },
+            (err, token) => {
+              if (err) {
+                res.send(err);
+              } else {
+                res.status(200).send({
+                  msg: 'Logged in!',
+                  token: token,
+                  user: results[0],
+                });
+              }
+            }
+          );
         } else {
           res.status(403).json({ user: 'Password is wrong' });
         }
