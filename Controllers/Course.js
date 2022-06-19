@@ -40,8 +40,15 @@ export const getCourses= async(req,res)=>{
 
 export const getCourseNames= async(req,res)=>{
   const sqlQuery="select id,courseName from courses where userId=?";
-
   pool.query(sqlQuery,req.params.userId,(err,row,field)=>{
+      res.status(200).json({data:row});
+  })
+}
+
+
+export const getCourseCategories= async(req,res)=>{
+  const sqlQuery="select id,courseId,categoryName from poolcategory where courseId=?";
+  pool.query(sqlQuery,req.params.courseId,(err,row,field)=>{
       res.status(200).json({data:row});
   })
 }
