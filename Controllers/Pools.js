@@ -82,6 +82,16 @@ export const addQuestionToPool =async (req,res)=>{
 export const getPoolQuestions = async(req,res)=>{
     const {userId}=req.params;
     pool.query("select * from poolQuestions where userId=?",[userId],(err,row,field)=>{
-        res.send(row);
+        let data=[];
+        let rowlength=row.length;
+        row.forEach((d,index)=>{
+            pool.query("select options from questionoptions where questionId=?",d.id,(err,row,field)=>{
+                d.options=row;
+                data.push(d)
+                if(rowlength-1 === index){
+                    res.send(data);
+                }
+            })
+        })
     })
 }

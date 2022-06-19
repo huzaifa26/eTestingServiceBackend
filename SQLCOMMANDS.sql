@@ -66,7 +66,7 @@ create table enrolled(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     courseId int(11) UNSIGNED NOT NULL,
     userId int(11) UNSIGNED NOT NULL,
-    createdTime DATETIME NOT NULL,
+    joinedTime DATETIME NOT NULL,
     FOREIGN KEY (courseId) REFERENCES courses(id),
     FOREIGN KEY (userId) REFERENCES user(id),
 )
@@ -134,4 +134,26 @@ create table quizQuestions(
     questionId int(11) UNSIGNED,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
+)
+
+create table attemptedQuiz(
+    id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    quizId int(11) UNSIGNED,
+    questionId int(11) UNSIGNED,
+    userId int(11) UNSIGNED NOT NULL,
+    userAnswer varchar(255) NOT NULL,
+    FOREIGN KEY (quizId) REFERENCES quiz(id),
+    FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
+    FOREIGN KEY (userId) REFERENCES user(id),
+);
+
+create table quizResult(
+    id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    quizId int(11) UNSIGNED,
+    userId int(11) UNSIGNED NOT NULL,
+    questionId int(11) UNSIGNED,
+    marks int(10) NOT NULL,
+    FOREIGN KEY (quizId) REFERENCES quiz(id),
+    FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
+    FOREIGN KEY (userId) REFERENCES user(id),
 )

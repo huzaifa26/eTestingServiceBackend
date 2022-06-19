@@ -77,16 +77,24 @@ export const SignUp = async (req, res) => {
 
 export const EmailVerify = (req, res) => {
   const { id } = req.body;
+  console.log(id)
 
-  pool.query('UPDATE user set verified = true where id=?',id,(err, row) => {
-      if (err !== null) {
-        console.log(err);
-        res.json({err:err});
-        return;
+  pool.query('select verified from user where id=?',id,(err,row,field)=>{
+    console.log(row);
+    if (row[0].verified === 1){
+      res.status(400).json("Already Verified");
+    } else if (row[0].verified === 0) {
+      pool.query('UPDATE user set verified = true where id=?',id,(err, row) => {
+        if (err !== null) {
+          console.log(err);
+          res.json({err:err});
+          return;
+        }
+        res.status(200).json({status:'Success'});
       }
-      res.json({status:'Success'});
+    );
     }
-  );
+  })
 };
 
 export const ForgotPassword = (req, res) => {
