@@ -8,10 +8,10 @@ dotenv.config();
 export const CreateCourse = async(req,res)=>{
     console.log(req.body);
 
-    const { userId, imageUrl, courseName, description, startDate, endDate, format, createTime } = req.body;
-    const createCourseQuery="INSERT INTO courses (userId,imageUrl,courseName,courseDescription,createTime,startTime,endTime,courseFormat) VALUES (?,?,?,?,?,?,?,?)";
+    const { userId, imageUrl, courseName, description , createTime } = req.body;
+    const createCourseQuery="INSERT INTO courses (userId,imageUrl,courseName,courseDescription,createTime) VALUES (?,?,?,?,?)";
 
-    pool.query(createCourseQuery,[userId, imageUrl, courseName, description, createTime, startDate, endDate, format],(err,row,field)=>{
+    pool.query(createCourseQuery,[userId, imageUrl, courseName, description, createTime],(err,row,field)=>{
         console.log(err);
         if (err) {
             console.log(err);
@@ -32,8 +32,9 @@ export const CreateCourse = async(req,res)=>{
 }
 
 export const getCourses= async(req,res)=>{
-    const sqlQuery="select * from courses";
-    pool.query(sqlQuery,(err,row,field)=>{
+    const {userId}=req.params;
+    const sqlQuery="select * from courses where userId=?";
+    pool.query(sqlQuery,[userId],(err,row,field)=>{
         res.status(200).json({data:row});
     })
 }

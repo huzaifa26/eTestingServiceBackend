@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import router from './routes/routes.js';
 import mysql from 'mysql2';
 import cors from 'cors';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 dotenv.config();

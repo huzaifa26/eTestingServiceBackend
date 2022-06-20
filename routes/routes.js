@@ -4,6 +4,8 @@ const router = express.Router();
 import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange} from '../Controllers/Auth.js';
 import { CreateCourse, getCourseNames, getCourses, getCourseCategories } from '../Controllers/Course.js';
 import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions} from "../Controllers/Pools.js";
+import { authenticateToken } from '../Controllers/AuthenticateToken.js';
+import {updateUser} from "../Controllers/User.js";
 
 router.get('/', (req, res) => {
   res.json({
@@ -18,8 +20,10 @@ router.post('/emailVerification', EmailVerify);
 router.post('/forgotPassword', ForgotPassword);
 router.post('/forgotPasswordChange', ForgotPasswordChange);
 
-router.post('/courses', CreateCourse);
-router.get('/courses', getCourses);
+router.post ("/user",authenticateToken,updateUser);
+
+router.post('/courses', authenticateToken, CreateCourse);
+router.get('/courses/:userId', authenticateToken, getCourses);
 router.get('/getCourseName/:userId',getCourseNames);
 router.get('/getCourseCategories/:courseId',getCourseCategories);
 

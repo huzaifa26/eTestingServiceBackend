@@ -4,7 +4,10 @@ create table user(
     fullName varchar(100) NOT NULL,
     email varchar(255) NOT NULL UNIQUE,
     pass varchar(255) NOT NULL,
-    verified Boolean NOT NULL DEFAULT false
+    verified Boolean NOT NULL DEFAULT false,
+    phoneNumber INT(50),
+    userAddress varchar(255),
+    userImg varchar(255)
 )
 
 create table courses(
@@ -14,9 +17,6 @@ create table courses(
     imageUrl varchar(255) NOT NULL,
     courseDescription varchar(255) NOT NULL,
     createTime DATETIME NOT NULL,
-    startTime DATETIME NOT NULL,
-    endTime DATETIME NOT NULL,
-    courseFormat varchar(20) NOT NULL,
     FOREIGN KEY (userId) REFERENCES user(id) 
 )
 
@@ -34,6 +34,7 @@ create table poolQuestions(
     courseId int(11) UNSIGNED NOT NULL,
     courseName varchar(255) NOT NULL,
     question varchar (255) NOT NULL,
+    questionImage varchar(255),
     correctOption varchar (255) NOT NULL,
     questionType varchar(255) NOT NULL,
     poolCategoryId int(11) UNSIGNED NOT NULL,

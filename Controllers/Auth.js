@@ -21,11 +21,7 @@ export const login = async(req, res) => {
       const token = Jwt.sign({
           username: row[0].fullName,
           userId: row[0].id,
-        },
-        process.env.SECRETKEY,{
-          expiresIn: '7d',
-        },
-        (err, token) => {
+        },process.env.SECRETKEY,{expiresIn: '7d'},(err, token) => {
           if (err) {
             res.send(err);
           } else {

@@ -45,10 +45,11 @@ export const getPoolCategory = async(req,res)=>{
 }
 
 export const addQuestionToPool =async (req,res)=>{
-    const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options}=(req.body);
-    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId) VALUES (?,?,?,?,?,?,?)";
+    console.log(req.body)
+    const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg}=(req.body);
+    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage) VALUES (?,?,?,?,?,?,?,?)";
 
-    pool.query(addQuestionToPoolQuery,[courseId,courseName,question,questionType,correctOption,poolCategory,userId],(err,row,field)=>{
+    pool.query(addQuestionToPoolQuery,[courseId,courseName,question,questionType,correctOption,poolCategory,userId,questionImg],(err,row,field)=>{
         if (err) {
             console.log(err);
             res.status(500).json({
