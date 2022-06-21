@@ -46,10 +46,10 @@ export const getPoolCategory = async(req,res)=>{
 
 export const addQuestionToPool =async (req,res)=>{
     console.log(req.body)
-    const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg}=(req.body);
-    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage) VALUES (?,?,?,?,?,?,?,?)";
+    const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
+    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage,isMathjax) VALUES (?,?,?,?,?,?,?,?,?)";
 
-    pool.query(addQuestionToPoolQuery,[courseId,courseName,question,questionType,correctOption,poolCategory,userId,questionImg],(err,row,field)=>{
+    pool.query(addQuestionToPoolQuery,[courseId,courseName,question,questionType,correctOption,poolCategory,userId,questionImg,isMathJax],(err,row,field)=>{
         if (err) {
             console.log(err);
             res.status(500).json({
@@ -93,6 +93,24 @@ export const getPoolQuestions = async(req,res)=>{
                     res.send(data);
                 }
             })
+        })
+    })
+}
+
+export const deletQuestion = async(req,res)=>{
+    console.log(req.body);
+    const {id}=req.body;
+    pool.query("delete from poolQuestions where id=?",[id],(err,row,field)=>{
+        if(err) {
+            res.status(400).json("Error deleting Questions")
+            return    
+        };
+        pool.query("delete from questionoptions where questionId=?",id,(err,row,field)=>{
+            if(err) {
+                res.status(400).json("Error deleting Questions")
+                return    
+            };
+            res.status(200).json("Question Deleted");
         })
     })
 }

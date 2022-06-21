@@ -1,4 +1,3 @@
-
 create table user(
     id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     fullName varchar(100) NOT NULL,
@@ -17,6 +16,7 @@ create table courses(
     imageUrl varchar(255) NOT NULL,
     courseDescription varchar(255) NOT NULL,
     createTime DATETIME NOT NULL,
+    isMathjax boolean NOT NULL,
     FOREIGN KEY (userId) REFERENCES user(id) 
 )
 
@@ -28,6 +28,9 @@ create table poolCategory(
     FOREIGN KEY (courseId) REFERENCES courses(id),
     FOREIGN KEY (userId) REFERENCES user(id) 
 )
+
+ALTER TABLE courses
+drop isMathjax;
 
 create table poolQuestions(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,

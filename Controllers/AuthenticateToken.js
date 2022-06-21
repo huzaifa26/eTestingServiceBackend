@@ -3,15 +3,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+  const authcookie = req.cookies.token;
+  // const authHeader = req.headers['authorization']
+  console.log(authcookie)
+  // const token = authHeader && authHeader.split(' ')[1]
+  
+  if (authcookie == null) return res.sendStatus(401);
 
-  if (token == null) return res.sendStatus(401)
-
-  Jwt.verify(token, process.env.SECRETKEY, (err, user) => {
-
+  Jwt.verify(authcookie, process.env.SECRETKEY, (err, user) => {
     if (err) return res.sendStatus(403)
     req.user = user
-    next()
+    next();
   })
 }

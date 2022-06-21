@@ -3,15 +3,20 @@ import dotenv from 'dotenv';
 import router from './routes/routes.js';
 import mysql from 'mysql2';
 import cors from 'cors';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const corsOptions ={
+  origin:'http://localhost:3000', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200
+}
+
 
 const app = express();
 dotenv.config();
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors(corsOptions));
 
 const getPoolConnection = async () => {
   return mysql.createPool({

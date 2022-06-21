@@ -3,11 +3,12 @@ const router = express.Router();
 
 import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange} from '../Controllers/Auth.js';
 import { CreateCourse, getCourseNames, getCourses, getCourseCategories } from '../Controllers/Course.js';
-import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions} from "../Controllers/Pools.js";
+import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion} from "../Controllers/Pools.js";
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
-import {updateUser} from "../Controllers/User.js";
+import {getUser, updateUser} from "../Controllers/User.js";
 
 router.get('/', (req, res) => {
+  console.log('Cookies: ', req.cookies)
   res.json({
     success: '1',
     message: 'This is api working',
@@ -18,19 +19,20 @@ router.post('/login', login);
 router.post('/signup', SignUp);
 router.post('/emailVerification', EmailVerify);
 router.post('/forgotPassword', ForgotPassword);
-router.post('/forgotPasswordChange', ForgotPasswordChange);
+router.post('/forgotPasswordChange',ForgotPasswordChange);
 
 router.post ("/user",authenticateToken,updateUser);
+router.get("/user",authenticateToken,getUser);
 
 router.post('/courses', authenticateToken, CreateCourse);
-router.get('/courses/:userId', authenticateToken, getCourses);
-router.get('/getCourseName/:userId',getCourseNames);
-router.get('/getCourseCategories/:courseId',getCourseCategories);
+router.get('/courses/:userId',authenticateToken, getCourses);
+router.get('/getCourseName/:userId',authenticateToken, getCourseNames);
+router.get('/getCourseCategories/:courseId',authenticateToken, getCourseCategories);
+router.post("/poolCategory",authenticateToken, createPoolCategory);
+router.get("/poolCategory/:courseId/:userId",authenticateToken, getPoolCategory);
+router.post("/poolQuestions",authenticateToken, addQuestionToPool);
+router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
 
-router.post("/poolCategory",createPoolCategory);
-router.get("/poolCategory/:courseId/:userId",getPoolCategory);
-
-router.post("/poolQuestions",addQuestionToPool)
-router.get("/poolQuestions/:userId",getPoolQuestions)
+router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
 
 export default router;

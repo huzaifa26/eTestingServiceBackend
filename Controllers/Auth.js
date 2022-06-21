@@ -25,7 +25,8 @@ export const login = async(req, res) => {
           if (err) {
             res.send(err);
           } else {
-            res.status(200).send({
+            res.cookie('token',token,{maxAge:10000});
+            res.status(200).json({
               msg: 'Logged in!',
               token: token,
               user: row[0],
@@ -134,7 +135,7 @@ export const ForgotPasswordChange = (req, res) => {
   const password = hashSync(req.body.newPassword, salt);
 
   pool.query(
-    'UPDATE user set pass = ? where id=?',
+    'UPDATE user set pass=? where id=?',
     [password,id],
     (err, results) => {
       if (err) {
