@@ -11,8 +11,7 @@ export const login = async(req, res) => {
 
   const queryUserExists="SELECT * FROM `user` where `email`=?";
   pool.query(queryUserExists,[email],(err,row,field)=>{
-    if(row.length === 0) 
-    {
+    if(row.length === 0) {
       res.status(403).json({ user: 'Password is wrong' });
       return;
     }
@@ -20,14 +19,15 @@ export const login = async(req, res) => {
     console.log(xyz);
     if (xyz) {
       let user={username: row[0].fullName,userId: row[0].id}
-      const token = Jwt.sign(user,process.env.SECRETKEY,{expiresIn: '5s'},(err, token) => {
+      const token = Jwt.sign(user,process.env.SECRETKEY,{expiresIn: '1d'},(err, token) => {
           if (err) {
+            console.log(err);
             res.send(err);
           } else {
             const refreshToken = Jwt.sign(user, process.env.SECRETKEY, { expiresIn: "2d"})
             tokenList[refreshToken] = token;
-            res.cookie('token',token,{maxAge:100000000000});
-            res.cookie('reFreshToken',refreshToken,{maxAge:1000000000000});
+            res.cookie('token',token,{maxAge:100000000000000});
+            res.cookie('reFreshToken',refreshToken,{maxAge:1000000000000000});
 
             res.status(200).json({
               msg: 'Logged in!',
@@ -38,7 +38,7 @@ export const login = async(req, res) => {
         }
       );
     } else {
-      res.status(403).json({ user: 'Password is wrong' });
+      res.status(400).json({ user: 'Password is wrong' });
     }
   })
 };

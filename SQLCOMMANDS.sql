@@ -161,26 +161,3 @@ create table quizResult(
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
     FOREIGN KEY (userId) REFERENCES user(id),
 )
-
-
-
-
-curl 'http://localhost:5000/api/courses' \
-  -H 'Accept: application/json, text/plain, */*' \
-  -H 'Accept-Language: en-US,en;q=0.9' \
-  -H 'Cache-Control: no-cache' \
-  -H 'Connection: keep-alive' \
-  -H 'Content-Type: application/json' \
-  -H 'Cookie: _xsrf=2|0e2c9b63|4389f36ede50106eb6af6cc56ae2ea23|1654011533; username-localhost-8889="2|1:0|10:1654014864|23:username-localhost-8889|44:ZTdmOTkwY2I0NjIwNDNkMjg2MGJhOTA5Y2FiMmMyMzA=|12d969164097e21337cf3ef456221b48fef8cd84fa149b0e27bfce39b6479316"; username-localhost-8888="2|1:0|10:1655310128|23:username-localhost-8888|44:ZjA4M2VjNGQzYTg2NGQyNDg4Mzk2MmM5MTdjOTA3Njk=|1d37052c8df5809edbc9b957d9aeeeda831e2c4575ba30e8068192c9db1a6f93"; reFreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imh1emFpZmEgYWJpZCIsInVzZXJJZCI6MSwiaWF0IjoxNjU1ODcxMTgwLCJleHAiOjE2NTYwNDM5ODB9.ro6MWUtTWPFtC8KwnLEXq_244ZyM3L-VBkbebEDPfJE; token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imh1emFpZmEgYWJpZCIsInVzZXJJZCI6MSwiaWF0IjoxNjU1ODcxMTk0LCJleHAiOjE2NTU4NzEyMDR9.lkZ2be06nQU0PoQsDUI4yVO8jw1iLtpYBbyz41G9HrU' \
-  -H 'Origin: http://localhost:3000' \
-  -H 'Pragma: no-cache' \
-  -H 'Referer: http://localhost:3000/' \
-  -H 'Sec-Fetch-Dest: empty' \
-  -H 'Sec-Fetch-Mode: cors' \
-  -H 'Sec-Fetch-Site: same-site' \
-  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36' \
-  -H 'sec-ch-ua: " Not A;Brand";v="99", "Chromium";v="102", "Google Chrome";v="102"' \
-  -H 'sec-ch-ua-mobile: ?0' \
-  -H 'sec-ch-ua-platform: "Windows"' \
-  --data-raw '{"userId":1,"imageUrl":"https://firebasestorage.googleapis.com/v0/b/fyp-bb1b4.appspot.com/o/courseImages%2Fmse.jpg?alt=media&token=636d64b5-31ac-46e0-8d31-702f72ecb5cc","courseName":"asdasdsda","description":"asdasdsadsadsad","createTime":"2022-06-22 09:14:43"}' \
-  --compressed

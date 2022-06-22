@@ -25,7 +25,7 @@ const getPoolConnection = async () => {
     password: process.env.PASSWORD,
     database: process.env.DATABASE,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 20,
     queueLimit: 0,
   });
 };
