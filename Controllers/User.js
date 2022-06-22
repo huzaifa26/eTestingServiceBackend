@@ -16,7 +16,7 @@ export const updateUser=(req,res)=>{
 }
 
 export const getUser = (req,res)=>{
-    const {userId} = req.user;
+    const {userId} = req.user ;
     console.log(userId);
     pool.query("select * from user where id=?",userId,(err,row,field)=>{
         if (err) res.status(400).json("User doesnot exists");

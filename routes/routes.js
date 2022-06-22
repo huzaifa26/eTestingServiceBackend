@@ -1,11 +1,12 @@
 import express from 'express';
 const router = express.Router();
 
-import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange} from '../Controllers/Auth.js';
+import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange, isAuthorized} from '../Controllers/Auth.js';
 import { CreateCourse, getCourseNames, getCourses, getCourseCategories } from '../Controllers/Course.js';
 import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion} from "../Controllers/Pools.js";
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
+import { refreshToken } from '../Controllers/AuthenticateToken.js';
 
 router.get('/', (req, res) => {
   console.log('Cookies: ', req.cookies)
@@ -34,5 +35,8 @@ router.post("/poolQuestions",authenticateToken, addQuestionToPool);
 router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
 
 router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
+
+router.get("/isAuthorized",authenticateToken,isAuthorized);
+router.get("/refreshToken",refreshToken);
 
 export default router;

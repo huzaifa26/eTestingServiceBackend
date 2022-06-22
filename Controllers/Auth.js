@@ -4,6 +4,7 @@ import { pool } from '../index.js';
 import { genSaltSync, hashSync, compareSync } from 'bcrypt';
 import Jwt from 'jsonwebtoken';
 dotenv.config();
+import { tokenList } from './AuthenticateToken.js';
 
 export const login = async(req, res) => {
   const { email, password } = req.body;
@@ -18,14 +19,16 @@ export const login = async(req, res) => {
     const xyz = compareSync(password, row[0].pass);
     console.log(xyz);
     if (xyz) {
-      const token = Jwt.sign({
-          username: row[0].fullName,
-          userId: row[0].id,
-        },process.env.SECRETKEY,{expiresIn: '7d'},(err, token) => {
+      let user={username: row[0].fullName,userId: row[0].id}
+      const token = Jwt.sign(user,process.env.SECRETKEY,{expiresIn: '5s'},(err, token) => {
           if (err) {
             res.send(err);
           } else {
-            res.cookie('token',token,{maxAge:10000});
+            const refreshToken = Jwt.sign(user, process.env.SECRETKEY, { expiresIn: "2d"})
+            tokenList[refreshToken] = token;
+            res.cookie('token',token,{maxAge:100000000000});
+            res.cookie('reFreshToken',refreshToken,{maxAge:1000000000000});
+
             res.status(200).json({
               msg: 'Logged in!',
               token: token,
@@ -145,3 +148,9 @@ export const ForgotPasswordChange = (req, res) => {
       res.status(200).json({message: 'Password Changed',});
     });
 };
+
+
+
+export const isAuthorized=(req,res)=>{
+  res.status(200).json("Authorized");
+}
