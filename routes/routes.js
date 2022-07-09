@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange, isAuthorized} from '../Controllers/Auth.js';
-import { CreateCourse, getCourseNames, getCourses, getCourseCategories } from '../Controllers/Course.js';
+import { CreateCourse, getCourseNames, getCourses, getCourseCategories, joinCourse, getJoinedCourses } from '../Controllers/Course.js';
 import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion} from "../Controllers/Pools.js";
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
@@ -27,6 +27,7 @@ router.get("/user",authenticateToken,getUser);
 
 router.post('/courses', authenticateToken, CreateCourse);
 router.get('/courses/:userId',authenticateToken, getCourses);
+router.get('/joinedcourses/:userId',authenticateToken, getJoinedCourses);
 router.get('/getCourseName/:userId',authenticateToken, getCourseNames);
 router.get('/getCourseCategories/:courseId',authenticateToken, getCourseCategories);
 router.post("/poolCategory",authenticateToken, createPoolCategory);
@@ -35,6 +36,9 @@ router.post("/poolQuestions",authenticateToken, addQuestionToPool);
 router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
 
 router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
+
+
+router.post("/joinCourse", joinCourse);
 
 router.get("/isAuthorized",authenticateToken,isAuthorized);
 router.get("/refreshToken",refreshToken);

@@ -45,7 +45,7 @@ export const getPoolCategory = async(req,res)=>{
 }
 
 export const addQuestionToPool =async (req,res)=>{
-    console.log(req.body)
+    console.log("here" +req.body)
     const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
     const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage,isMathjax) VALUES (?,?,?,?,?,?,?,?,?)";
 
@@ -91,6 +91,7 @@ export const getPoolQuestions = async(req,res)=>{
                 data.push(d)
                 if(rowlength-1 === index){
                     res.send(data);
+                    console.log(data)
                 }
             })
         })

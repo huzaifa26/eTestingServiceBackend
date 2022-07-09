@@ -11,14 +11,12 @@ export const updateUser=(req,res)=>{
             res.status(500).json({message:"cannot update user"});
             return
         }
-        console.log(row);
         res.status(200).json({id:id,message:"user updated Successfully"});
     })
 }
 
 export const getUser = (req,res)=>{
     const {userId} = req.user ;
-    console.log(userId);
     pool.query("select * from user where id=?",userId,(err,row,field)=>{
         if (err) res.status(400).json("User doesnot exists");
         console.log(row);

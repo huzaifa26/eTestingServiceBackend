@@ -72,7 +72,7 @@ create table enrolled(
     userId int(11) UNSIGNED NOT NULL,
     joinedTime DATETIME NOT NULL,
     FOREIGN KEY (courseId) REFERENCES courses(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table courseContent(
@@ -82,7 +82,7 @@ create table courseContent(
     fileName varchar(255) NOT NULL,
     fileType varchar(255) NOT NULL,
     createdTime DATETIME NOT NULL,
-    FOREIGN KEY (courseId) REFERENCES courses(id),
+    FOREIGN KEY (courseId) REFERENCES courses(id)
 )
 
 
@@ -97,7 +97,7 @@ create table assignment(
     endTime DATETIME NOT NULL,
     -- userId int(11) UNSIGNED NOT NULL,
     FOREIGN KEY (courseId) REFERENCES courses(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table uploadAssignment(
@@ -107,7 +107,7 @@ create table uploadAssignment(
     fileUrl varchar(255) NOT NULL,
     uploadTime DATETIME NOT NULL,
     FOREIGN KEY (courseId) REFERENCES courses(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table assignmentResult(
@@ -129,7 +129,7 @@ create table quiz(
     endTime DATETIME NOT NULL,
     -- userId int(11) UNSIGNED NOT NULL,
     FOREIGN KEY (courseId) REFERENCES courses(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table quizQuestions(
@@ -137,7 +137,7 @@ create table quizQuestions(
     quizId int(11) UNSIGNED,
     questionId int(11) UNSIGNED,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
-    FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
+    FOREIGN KEY (questionId) REFERENCES poolQuestions(id)
 )
 
 create table attemptedQuiz(
@@ -148,7 +148,7 @@ create table attemptedQuiz(
     userAnswer varchar(255) NOT NULL,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 );
 
 create table quizResult(
@@ -159,5 +159,5 @@ create table quizResult(
     marks int(10) NOT NULL,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )

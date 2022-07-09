@@ -16,7 +16,6 @@ export const login = async(req, res) => {
       return;
     }
     const xyz = compareSync(password, row[0].pass);
-    console.log(xyz);
     if (xyz) {
       let user={username: row[0].fullName,userId: row[0].id}
       const token = Jwt.sign(user,process.env.SECRETKEY,{expiresIn: '1d'},(err, token) => {
@@ -82,7 +81,6 @@ export const SignUp = async (req, res) => {
 
 export const EmailVerify = (req, res) => {
   const { id } = req.body;
-  console.log(id)
 
   pool.query('select verified from user where id=?',id,(err,row,field)=>{
     console.log(row);
