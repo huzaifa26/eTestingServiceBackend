@@ -89,10 +89,40 @@ export const joinCourse= async(req,res)=>{
         if(row.affectedRows === 1)
         {res.status(200).json({message:'success'})}
         else
-        {console.log(row)}
+        {console.log("here"+row)}
       }
     })}
+  })
+}
 
+export const CourseContent = async (req,res)=>
+{
+  const {courseId,fileUrl,fileName,fileType,createdTime,title}= (req.body)
+  const queryCourseContent="INSERT INTO coursecontent (courseId,fileUrl,fileName,fileType,createdTime,title) VALUES (?,?,?,?,?,?)";
 
+  pool.query(queryCourseContent,[courseId,fileUrl,fileName,fileType,createdTime,title],(err, row,field) => {
+      if (err){
+        console.log(err)
+        
+      }
+      if(row){
+        console.log(row)
+
+        
+      } 
+      if(field){
+        console.log('field here' +field)
+
+      } 
+  }
+)}
+
+export const getCourseContent = async (req,res)=>
+{
+  const queryCourseContent="select id,fileUrl,fileName,fileType,createdTime,title from coursecontent where courseId=?";
+
+  pool.query(queryCourseContent,req.params.courseId,(err,row,field)=>{
+    console.log(row)
+    res.status(200).json({data:row});
   })
 }

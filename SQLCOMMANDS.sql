@@ -85,6 +85,7 @@ create table courseContent(
     FOREIGN KEY (courseId) REFERENCES courses(id)
 )
 
+ALTER TABLE courseContent ADD title varchar(255) NOT NULL;
 
 create table assignment(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,

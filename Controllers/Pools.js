@@ -115,3 +115,42 @@ export const deletQuestion = async(req,res)=>{
         })
     })
 }
+
+export const editQuestionToPool =async (req,res)=>{
+    const {id,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
+    const editQuestionToPoolQuery="UPDATE poolquestions SET question=?,correctOption=?,questionImage=?,isMathjax=? WHERE id=?";
+
+    console.log(req.body.id)
+    pool.query(editQuestionToPoolQuery,[question,correctOption,questionImg,isMathJax,id],(err,row,field)=>{
+        if (err) {
+            console.log(err);
+            res.status(500).json({
+              success: 0,
+              message: 'Cannot Add Question to Pool',
+              err:err
+            });
+            return
+        }
+
+        if (row)
+        console.log(row)
+
+        // if(questionType === "Mcq"){
+        //     options.forEach((item,i)=>{
+        //         pool.query("UPDATE questionOptions (questionId,options) VALUES (?,?)",[row.insertId,item],(err,row,field)=>{
+        //             //
+        //         })
+        //         })
+        //     }
+        //     if (questionType === "TRUE/FALSE" || questionType === "Subjective"){
+        //         pool.query("INSERT INTO questionOptions (questionId,options) VALUES (?,?)",[row.insertId,correctOption],(err,row,field)=>{
+        //             // 
+        //         })
+        //         }
+        //     console.log("Success");
+        //     res.status(200).json({
+        //     success: 1,
+        //     message: 'Question Added Succesfully'
+        // });
+    })
+}
