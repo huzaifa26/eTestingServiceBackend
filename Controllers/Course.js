@@ -39,7 +39,7 @@ export const getCourses= async(req,res)=>{
 export const getJoinedCourses= async(req,res)=>{
     const {userId}=req.params;
     // console.log("here" +userId)
-    pool.query("SELECT courses.id,courses.courseDescription,courses.courseName,courses.imageUrl FROM courses INNER JOIN enrolled ON courses.id = enrolled.courseId WHERE enrolled.userId=?",[userId],(err,row,field)=>{
+    pool.query("SELECT courses.id,courses.userId,courses.courseDescription,courses.courseName,courses.imageUrl FROM courses INNER JOIN enrolled ON courses.id = enrolled.courseId WHERE enrolled.userId=?",[userId],(err,row,field)=>{
       if(row.length>0)
       {
         console.log(row)
