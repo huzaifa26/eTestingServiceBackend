@@ -162,3 +162,5 @@ create table quizResult(
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
     FOREIGN KEY (userId) REFERENCES user(id)
 )
+
+-- SELECT * FROM poolquestions INNER JOIN questionoptions ON poolquestions.id = questionoptions.questionId WHERE poolquestions.userId=1 AND poolquestions.courseId=1;

@@ -154,3 +154,38 @@ export const editQuestionToPool =async (req,res)=>{
         // });
     })
 }
+
+export const getPoolQuestions2 = (req,res)=>{
+    const {courseId,userId}=req.params;
+    let data = []
+    console.log(userId,courseId)
+
+    pool.query("SELECT * from poolquestions where userId=? AND courseid=?",[userId,courseId],(err,row,field) =>
+    {
+        if(err) {console.log('error')}
+        if(row)
+        {
+            console.log('got response'+'\n')
+            data.push(...row)
+            console.log(data)
+            
+            data.forEach((value) =>
+            {
+                //to check if data inserts in array of objects
+                value.check =[{id:'test1'},{id:'test2'}]
+
+                pool.query("SELECT * from questionoptions where questionId=?",[value.id],(error,rows,fields) =>
+                {
+                    if(error){console.log(error)}
+                    if(rows)
+                    {
+                        console.log('inside forEach')
+                        value.options =rows
+                    }
+                })   
+            })
+            console.log('\n'+'after forEach'+'\n')
+            res.send(data)
+        }
+    })
+}
