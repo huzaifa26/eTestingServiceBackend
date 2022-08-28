@@ -45,7 +45,7 @@ export const getPoolCategory = async(req,res)=>{
 }
 
 export const addQuestionToPool =async (req,res)=>{
-    console.log("here" +req.body)
+    console.log(req.body)
     const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
     const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage,isMathjax) VALUES (?,?,?,?,?,?,?,?,?)";
 
@@ -158,34 +158,34 @@ export const editQuestionToPool =async (req,res)=>{
 export const getPoolQuestions2 = (req,res)=>{
     const {courseId,userId}=req.params;
     let data = []
+    let newArr=[]
     console.log(userId,courseId)
-
-    pool.query("SELECT * from poolquestions where userId=? AND courseid=?",[userId,courseId],(err,row,field) =>
-    {
-        if(err) {console.log('error')}
+  
+    pool.query("SELECT * from poolquestions where userId=? AND courseid=?",[userId,courseId],(err,row,field) =>{
+        if(err) {console.log(err)}
         if(row)
         {
             console.log('got response'+'\n')
             data.push(...row)
             console.log(data)
             
-            data.forEach((value) =>
-            {
+            data.forEach((value,index) =>{
                 //to check if data inserts in array of objects
-                value.check =[{id:'test1'},{id:'test2'}]
-
-                pool.query("SELECT * from questionoptions where questionId=?",[value.id],(error,rows,fields) =>
-                {
+  
+                pool.query("SELECT * from questionoptions where questionId=?",[value.id],(error,rows,fields) =>{
                     if(error){console.log(error)}
                     if(rows)
                     {
                         console.log('inside forEach')
                         value.options =rows
+                        newArr.push(value);
+                        if(index === data.length-1){
+                          res.send(newArr);
+                        }
                     }
                 })   
             })
-            console.log('\n'+'after forEach'+'\n')
-            res.send(data)
         }
     })
-}
+  }
+

@@ -133,12 +133,20 @@ create table quiz(
     FOREIGN KEY (userId) REFERENCES user(id)
 )
 
+
 create table quizQuestions(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     quizId int(11) UNSIGNED,
     questionId int(11) UNSIGNED,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id)
+)
+
+create table quizquestionOptions(
+    id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    quizquestionId int(11) UNSIGNED NOT NULL,
+    options varchar(255) NOT NULL,
+    FOREIGN KEY (quizquestionId) REFERENCES quizquestions(id)
 )
 
 create table attemptedQuiz(

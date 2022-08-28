@@ -7,6 +7,7 @@ import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,de
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
 import { refreshToken } from '../Controllers/AuthenticateToken.js';
+import { getAllQuizzes, quiz } from '../Controllers/Quiz.js';
 
 router.get('/', (req, res) => {
   console.log('Cookies: ', req.cookies)
@@ -40,8 +41,11 @@ router.post("/editQuestionToPool",authenticateToken, editQuestionToPool);
 router.post("/poolQuestions",authenticateToken, addQuestionToPool);
 router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
 router.get("/poolQuestions2/:userId/:courseId",authenticateToken, getPoolQuestions2);
-
 router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
+
+router.post('/quiz',authenticateToken,quiz)
+router.get("/getAllQuizzes/:courseId",authenticateToken,getAllQuizzes);
+
 
 router.get("/isAuthorized",authenticateToken,isAuthorized);
 router.get("/refreshToken",refreshToken);

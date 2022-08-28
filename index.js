@@ -18,26 +18,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-const getPoolConnection = async () => {
-  return mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
-    waitForConnections: true,
-    connectionLimit: 20,
-    queueLimit: 0,
-  });
-};
 
-export const pool = await getPoolConnection()
-  .then((pool) => {
-    console.log('Database Connected');
-    return pool;
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+export const pool= mysql.createConnection({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+});
 
 app.use('/api', router);
 

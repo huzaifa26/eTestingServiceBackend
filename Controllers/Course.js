@@ -60,7 +60,7 @@ export const getCourseNames= async(req,res)=>{
 
 
 export const getCourseCategories= async(req,res)=>{
-  const sqlQuery="select id,courseId,categoryName from poolcategory where courseId=?";
+  const sqlQuery="SELECT poolcategory.id,poolcategory.courseId,poolcategory.categoryName,courses.courseName from poolcategory INNER JOIN courses ON poolcategory.courseId = courses.id WHERE courseId=?";
   pool.query(sqlQuery,req.params.courseId,(err,row,field)=>{
       res.status(200).json({data:row});
   })
@@ -103,22 +103,19 @@ export const CourseContent = async (req,res)=>
   pool.query(queryCourseContent,[courseId,fileUrl,fileName,fileType,createdTime,title],(err, row,field) => {
       if (err){
         console.log(err)
-        
       }
       if(row){
         console.log(row)
-
-        
       } 
       if(field){
         console.log('field here' +field)
-
       } 
   }
 )}
 
 export const getCourseContent = async (req,res)=>
 {
+  console.log(req.params)
   const queryCourseContent="select id,fileUrl,fileName,fileType,createdTime,title from coursecontent where courseId=?";
 
   pool.query(queryCourseContent,req.params.courseId,(err,row,field)=>{
