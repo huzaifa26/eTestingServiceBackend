@@ -105,7 +105,7 @@ export const CourseContent = async (req,res)=>
         console.log(err)
       }
       if(row){
-        console.log(row)
+        res.status(200).json({message: 'Content Uploaded',})
       } 
       if(field){
         console.log('field here' +field)
@@ -121,5 +121,17 @@ export const getCourseContent = async (req,res)=>
   pool.query(queryCourseContent,req.params.courseId,(err,row,field)=>{
     console.log(row)
     res.status(200).json({data:row});
+  })
+}
+
+export const enrolledLength = async (req,res)=>
+{
+  const queryCourseContent="SELECT * FROM enrolled where courseId=?";
+
+  pool.query(queryCourseContent,req.params.courseId,(err,row,field)=>{
+    if(err)
+    console.log(row)
+    if(row)
+    res.status(200).json({data:row.length});
   })
 }

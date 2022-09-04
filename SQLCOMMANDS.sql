@@ -101,24 +101,23 @@ create table assignment(
     FOREIGN KEY (userId) REFERENCES user(id)
 )
 
-create table uploadAssignment(
+create table uploadedAssignments(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    courseId int(11) UNSIGNED NOT NULL,
+    assignmentId int(11) UNSIGNED NOT NULL,
     userId int(11) UNSIGNED NOT NULL,
-    fileUrl varchar(255) NOT NULL,
-    uploadTime DATETIME NOT NULL,
-    FOREIGN KEY (courseId) REFERENCES courses(id),
+    submittedTime varchar(255) NOT NULL,
+    FOREIGN KEY (assignmentId) REFERENCES assignment(id),
     FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table assignmentResult(
     id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    courseId int(11) UNSIGNED NOT NULL,
+    assignmentId int(11) UNSIGNED NOT NULL,
     userId int(11) UNSIGNED NOT NULL,
-    uaId int(11) UNSIGNED NOT NULL,
-    marks int(10) NOT NULL,
-    FOREIGN KEY (courseId) REFERENCES courses(id),
-    FOREIGN KEY (userId) REFERENCES user(id),
+    totalMarks int(11) UNSIGNED NOT NULL,
+    obtainedMarks int(10) NOT NULL,
+    FOREIGN KEY (assignmentId) REFERENCES assignment(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
 )
 
 create table quiz(
@@ -168,6 +167,16 @@ create table quizResult(
     marks int(10) NOT NULL,
     FOREIGN KEY (quizId) REFERENCES quiz(id),
     FOREIGN KEY (questionId) REFERENCES poolQuestions(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
+)
+
+create table attemptedquizquestions(
+    id int(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    userId int(11) UNSIGNED,
+    quizId int(11) UNSIGNED,
+    quizquestionId int(11) UNSIGNED,
+    FOREIGN KEY (quizId) REFERENCES quiz(id),
+    FOREIGN KEY (quizquestionId) REFERENCES quizquestions(id),
     FOREIGN KEY (userId) REFERENCES user(id)
 )
 

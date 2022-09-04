@@ -15,6 +15,7 @@ export const updateUser=(req,res)=>{
     })
 }
 
+
 export const getUser = (req,res)=>{
     const {userId} = req.user ;
     pool.query("select * from user where id=?",userId,(err,row,field)=>{
