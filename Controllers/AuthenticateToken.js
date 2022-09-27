@@ -51,7 +51,7 @@ export const refreshToken=(req,res,next)=>{
       const token = Jwt.sign(user, process.env.SECRETKEY, { expiresIn: "10s"})
       tokenList[refreshToken] = token;
       res.cookie('token',token,{maxAge:100000000000});
-      res.status(200).json(token); 
+      res.status(200).send(token); 
   } else {
       res.status(404).send('Invalid request')
   }

@@ -5,7 +5,6 @@ import { pool } from '../index.js';
 dotenv.config();
 
 export const createPoolCategory = async(req,res)=>{
-    console.log(req.body);
 
     const {courseId,userId,categoryName}=req.body;
 
@@ -15,14 +14,14 @@ export const createPoolCategory = async(req,res)=>{
         console.log(err);
         if (err) {
             console.log(err);
-            res.status(500).json({
+            res.status(500).send({
               success: 0,
               message: 'Cannot Register Pool Category',
               err:err
             });
           } else {
               console.log("Success");
-              res.status(200).json({
+              res.status(200).send({
               success: 1,
               message: 'Pool Category Registered',
             });
@@ -32,7 +31,6 @@ export const createPoolCategory = async(req,res)=>{
 
 
 export const getPoolCategory = async(req,res)=>{
-    console.log(req.params);
 
     const {courseId,userId}=req.params;
 
@@ -40,58 +38,46 @@ export const getPoolCategory = async(req,res)=>{
 
     pool.query(createPoolQuery,[courseId,userId],(err,row,field)=>{
         console.log(row)
-        res.status(200).json({data:row});
+        res.status(200).send({data:row});
     })
 }
 
 export const addQuestionToPool =async (req,res)=>{
     console.log(req.body)
-    const {courseId,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
-    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,courseName,question,questionType,correctOption,poolCategoryId,userId,questionImage,isMathjax) VALUES (?,?,?,?,?,?,?,?,?)";
 
-    pool.query(addQuestionToPoolQuery,[courseId,courseName,question,questionType,correctOption,poolCategory,userId,questionImg,isMathJax],(err,row,field)=>{
-        if (err) {
-            console.log(err);
-            res.status(500).json({
-              success: 0,
-              message: 'Cannot Add Question to Pool',
-              err:err
-            });
-            return
-        }
+    const {courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,options}=(req.body);
+    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        if(questionType === "Mcq"){
-            options.forEach((item,i)=>{
-                pool.query("INSERT INTO questionOptions (questionId,options) VALUES (?,?)",[row.insertId,item],(err,row,field)=>{
-                    //
-                })
-                })
-            }
-            if (questionType === "TRUE/FALSE" || questionType === "Subjective"){
-                pool.query("INSERT INTO questionOptions (questionId,options) VALUES (?,?)",[row.insertId,correctOption],(err,row,field)=>{
-                    // 
-                })
-                }
-            console.log("Success");
-            res.status(200).json({
-            success: 1,
-            message: 'Question Added Succesfully'
-        });
-    })
+    pool.query("INSERT INTO poolquestions (courseId,poolCategoryId,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time],(err,row,field)=>{
+        if(err)
+        console.log(err)
+        if (row)
+        {
+            options.forEach((item,index) => {
+                if(item !== null)
+                {
+                pool.query("INSERT INTO poolquestionoptions (poolquestionId,options) VALUES (?,?)",[row.insertId,item],(error,rows,fields)=>{
+                    if(error)
+                    console.log(error)
+                })}
+                if(index+1 === options.length)
+                { res.status(200).send("Added")}
+            })
+        }})
 }
 
 export const getPoolQuestions = async(req,res)=>{
     const {userId}=req.params;
-    pool.query("select * from poolQuestions where userId=?",[userId],(err,row,field)=>{
+    pool.query("select * from poolquestions where userId=?",[userId],(err,row,field)=>{
         let data=[];
         let rowlength=row.length;
         row.forEach((d,index)=>{
-            pool.query("select options from questionoptions where questionId=?",d.id,(err,row,field)=>{
+            // console.log(d)
+            pool.query("select options from poolquestionoptions where questionId=?",d.id,(err,row,field)=>{
                 d.options=row;
                 data.push(d)
                 if(rowlength-1 === index){
                     res.send(data);
-                    console.log(data)
                 }
             })
         })
@@ -99,67 +85,70 @@ export const getPoolQuestions = async(req,res)=>{
 }
 
 export const deletQuestion = async(req,res)=>{
-    console.log(req.body);
     const {id}=req.body;
     pool.query("delete from poolQuestions where id=?",[id],(err,row,field)=>{
         if(err) {
-            res.status(400).json("Error deleting Questions")
+            res.status(400).send("Error deleting Questions")
             return    
         };
-        pool.query("delete from questionoptions where questionId=?",id,(err,row,field)=>{
+        pool.query("delete from poolquestionoptions where questionId=?",id,(err,row,field)=>{
             if(err) {
-                res.status(400).json("Error deleting Questions")
+                res.status(400).send("Error deleting Options of Pools")
                 return    
             };
-            res.status(200).json("Question Deleted");
+            res.status(200).send("Question Deleted");
         })
     })
 }
 
 export const editQuestionToPool =async (req,res)=>{
-    const {id,courseName,question,questionType,correctOption,poolCategory,userId,options,questionImg,isMathJax}=(req.body);
-    const editQuestionToPoolQuery="UPDATE poolquestions SET question=?,correctOption=?,questionImage=?,isMathjax=? WHERE id=?";
+    const {id,courseId,poolCategoryId,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,options}=(req.body);
 
-    console.log(req.body.id)
-    pool.query(editQuestionToPoolQuery,[question,correctOption,questionImg,isMathJax,id],(err,row,field)=>{
-        if (err) {
-            console.log(err);
-            res.status(500).json({
-              success: 0,
-              message: 'Cannot Add Question to Pool',
-              err:err
-            });
-            return
+    pool.query("delete from poolquestionoptions where poolquestionId=?",id,(err,row,field)=>{
+        if(err) {
+            res.status(400).send("Error deleting Options of Pools")
+            return    
+        };
+        if(row)
+        {
+            console.log('deleted')
+            pool.query('Update poolquestions SET courseId=?,poolCategoryId=?,userId=?,courseName=?,question=?,questionImage=?,correctOption=?,questionType=?,isMathJax=?,points=?,time=? WHERE id=? ',[courseId,poolCategoryId,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,id],(err,row,field) =>
+            {
+                if(err)
+                console.log(err)
+                if(row){
+                    console.log('updated')
+                    options.forEach((item,index) => {
+                        // console.log(index+1)
+                        // console.log(options.length)
+                        // console.log(item)
+                        if(item !== null)
+                        {
+                        pool.query("INSERT INTO poolquestionoptions (poolquestionId,options) VALUES (?,?)",[id,item],(error,rows,fields)=>{
+                            if(error)
+                            console.log(error)
+                            if(res)
+                            {
+                                console.log('res')
+                            }
+                        })}
+                    })
+                };
+            })
+
         }
-
-        if (row)
-        console.log(row)
-
-        // if(questionType === "Mcq"){
-        //     options.forEach((item,i)=>{
-        //         pool.query("UPDATE questionOptions (questionId,options) VALUES (?,?)",[row.insertId,item],(err,row,field)=>{
-        //             //
-        //         })
-        //         })
-        //     }
-        //     if (questionType === "TRUE/FALSE" || questionType === "Subjective"){
-        //         pool.query("INSERT INTO questionOptions (questionId,options) VALUES (?,?)",[row.insertId,correctOption],(err,row,field)=>{
-        //             // 
-        //         })
-        //         }
-        //     console.log("Success");
-        //     res.status(200).json({
-        //     success: 1,
-        //     message: 'Question Added Succesfully'
-        // });
+        res.status(200).send("Question Deleted");
     })
+
+    
+    
 }
 
 export const getPoolQuestions2 = (req,res)=>{
     const {courseId,userId}=req.params;
     let data = []
     let newArr=[]
-    console.log(userId,courseId)
+    // console.log(userId,courseId)
   
     pool.query("SELECT * from poolquestions where userId=? AND courseid=?",[userId,courseId],(err,row,field) =>{
         if(err) {console.log(err)}
@@ -167,16 +156,13 @@ export const getPoolQuestions2 = (req,res)=>{
         {
             console.log('got response'+'\n')
             data.push(...row)
-            console.log(data)
             
             data.forEach((value,index) =>{
-                //to check if data inserts in array of objects
-  
-                pool.query("SELECT * from questionoptions where questionId=?",[value.id],(error,rows,fields) =>{
+                // console.log(data)
+                pool.query("SELECT * from poolquestionoptions where poolquestionId=?",[value.id],(error,rows,fields) =>{
                     if(error){console.log(error)}
                     if(rows)
                     {
-                        console.log('inside forEach')
                         value.options =rows
                         newArr.push(value);
                         if(index === data.length-1){

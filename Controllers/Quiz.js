@@ -8,12 +8,11 @@ export const quiz = async(req,res)=>
 {
     const {title,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,startTime,endTime,questions,userId,courseId,totalPoints}=(req.body);
     const addQuestionToQuizQuery="INSERT INTO quiz (quizTitle,courseId,startTime,endTime,userId,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,totalPoints) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-    console.log('i am here')
 
     pool.query(addQuestionToQuizQuery,[title,courseId,startTime,endTime,userId,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,totalPoints],(errr,roww,fields)=>{
         if (errr) {
             console.log(errr);
-            res.status(500).json({
+            res.status(500).send({
               success: 0,
               message: 'Cannot Add Question to Pool',
               err:errr
@@ -22,6 +21,7 @@ export const quiz = async(req,res)=>
 
         if(roww)
         {
+            console.log(questions)
             questions.forEach((item,index)=>{
                 pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImg,item.points,item.time],(err,row,field)=>{
                     if(err)
@@ -43,39 +43,108 @@ export const quiz = async(req,res)=>
     })
 }
 
-export const getAllQuizzes = async(req,res)=>
+export const editQuiz = async(req,res)=>
 {
-  let quiz=[]
-  let quizQuestion = []
-  const sqlQuery="select * from quiz where courseId=?";
-  pool.query(sqlQuery,req.params.courseId,(err,row,field)=>{
-    if (err){console.log(err)}
-    if (row)
-    {
-        quiz.push(...row)
-        row.forEach((value,index) => {
-                pool.query("select * from quizquestions where quizId=?",[row[index].id],(error,rows,fields) =>
-                {   if(error)
-                    {console.log(err)}
-                    if(rows)
-                    {rows.forEach((item,i) =>
-                    {   pool.query('select * from quizquestionoptions where quizquestionid=?',[item.id],(e,r,f)=>
-                        {   if(e)
-                            {console.log(e)}
-                            if(r)
-                            {   item.options = r
-                                if(index === quiz.length-1)
-                                {res.status(200).json({data:quiz})}
-                            }
-                        })
-                    })
-                    value.questions=rows
-                    quizQuestion.push(value)
+    const {id,title,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,startTime,endTime,questions,totalPoints,courseId,userId}=(req.body);
+    const deleteQuestionToQuizQuery="DELETE from quiz WHERE id=?";
+    const addQuestionToQuizQuery="INSERT INTO quiz (quizTitle,courseId,startTime,endTime,userId,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,totalPoints) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+    // id is quizId
+    pool.query(deleteQuestionToQuizQuery,[id],(errr,roww,fields)=>{
+        if (errr) {
+            console.log(errr);
+            res.status(500).send({
+              success: 0,
+              message: 'Cannot DELETE Quiz',
+              err:errr
+            });
+        }
+
+        if(roww)
+        {
+            pool.query(addQuestionToQuizQuery,[title,courseId,startTime,endTime,userId,questionShuffle,answerShuffle,seeAnswer,copyQuestion,detectMobile,totalPoints],(errr,roww,fields)=>{
+                if (errr) {
+                    console.log(errr);
+                    res.status(500).send({
+                      success: 0,
+                      message: 'Cannot Add Question to Pool',
+                      err:errr
+                    });
                 }
-                })
-        })
-    }      
-  })
+        
+                if(roww)
+                {
+                    questions.forEach((item,index2)=>{
+                        pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImg,item.points,item.time],(err,row,field)=>{
+                            if(err)
+                            console.log(err)
+                            if (row)
+                            {
+                                item.options.forEach((item,index) => {
+                                    if(item !== null)
+                                    {
+                                    pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,item],(error,rows,fields)=>{
+                                        if(error)
+                                        console.log(error)
+                                        if (rows){
+                                        }
+                                    })}
+                                })
+                            }})
+                    })
+                }
+            })
+        }
+    })
+
+    console.log(questions)
+}
+
+export const getAllQuizzes = async (req,res)=>{
+    pool.query("select * from quiz where courseId=?",req.params.courseId,(err,row,field)=>{
+        if(err){
+            console.log(err)
+            res.send(err)
+            return
+        }
+
+        if(row.length === 0){
+            res.status(200).send({data:[]})
+            return
+        } else {
+
+        for(let i = 0;i<row.length;i++){
+            pool.query("select * from quizquestions where quizId=?", [row[i].id],(err,row1)=>{
+                if(err){
+                    console.log(err)
+                    res.send(err)
+                    return
+                }
+        
+                if(row1.length === 0){
+                    res.status(200).send({data:[]})
+                    return
+                } else {
+
+                for(let j=0;j<row1.length;j++){
+                    pool.query("select * from quizquestionoptions where quizquestionid=?", [row1[j].id],(err,row2,field)=>{
+                        row1[j].options=row2
+                        row[i].questions=row1
+                        console.log(row[i])
+                        if(i === row.length-1 && j===row1.length-1){ // question 3. quizoption=2. row.lenghth=3
+                            console.log("-------------------------");
+                            res.status(200).send({data:row})
+                        }
+                    })
+                }
+                
+
+                }
+            })
+        }
+        }
+
+    })
 }
 
 export const atempttedQuizQuestions = async(req,res)=>
@@ -163,4 +232,16 @@ export const showQuizResult =  async(req,res)=>
             {console.log(row)
             res.send(row)}
     })
+}
+
+export const quizDelete = async(req,res) =>
+{
+    const {id} = req.body
+    console.log(id)
+    pool.query('DELETE FROM quiz where id=?',id,(err,row,field)=>{
+        if(err)
+        console.log(err)
+        if(row)
+        res.status(200).send({message:"deleted"});
+      })
 }

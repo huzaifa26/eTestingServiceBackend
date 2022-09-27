@@ -13,30 +13,28 @@ export const uploadAssignment= async(req,res)=>
         if(err)
         console.log(err)
         if(row)
-        res.status(200).json({message: 'Assignment added',});
+        res.status(200).send({message: 'Assignment added',});
     })
 }
 
 export const getAssignments = async (req,res) =>
 {
     pool.query('select * from assignment where courseId=?',req.params.courseId,(err,row,field)=>{
-      console.log(row)
-      res.status(200).json({data:row});
+      res.status(200).send({data:row});
     })
 }
 export const editAssignment = async (req,res) =>
 {
 
     const {id,courseId,fileUrl,fileName,fileType,title,startTime,endTime,totalMarks}= (req.body)
-    console.log(totalMarks)
 
     pool.query('Update assignment SET assignmentTitle=?,courseId=?,fileUrl=?,fileName=?,fileType=?,startTime=?,endTime=?,totalMarks=? WHERE id=? ',[title,courseId,fileUrl,fileName,fileType,startTime,endTime,totalMarks,id],(err,row,field) =>
     {
         if(err)
         console.log(err)
         if(row){
-        res.status(200).json({message: 'Assignment added',})
-    console.log(row)};
+        res.status(200).send({message: 'Assignment added',})
+    };
     })
 }
 export const deleteAssignment = async (req,res) =>
@@ -46,7 +44,7 @@ export const deleteAssignment = async (req,res) =>
       if(err)
       console.log(err)
       if(row)
-      res.status(200).json({message:"deleted"});
+      res.status(200).send({message:"deleted"});
     })
 }
 
@@ -60,7 +58,7 @@ pool.query('INSERT into submittedassignments (assignmentId,userId,submittedTime,
     if(err)
     console.log(err)
     if(row){
-    res.status(200).json({message: 'Assignment submitted',})
+    res.status(200).send({message: 'Assignment submitted',})
     console.log(row)};
 })
 }
@@ -72,7 +70,7 @@ export const getAssignmentResult = async (req,res) =>
       if(err)
       console.log(err)
       if(row)
-      res.status(200).json({data:row});
+      res.status(200).send({data:row});
     })
 }
 
@@ -88,7 +86,7 @@ export const updateAssignmentResult = async (req,res) =>
         console.log(err)
         if(students.length === index+1)
         {
-            res.status(200).json({message:'sucess'});
+            res.status(200).send({message:'sucess'});
         }
         }
     })

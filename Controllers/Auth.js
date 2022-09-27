@@ -12,7 +12,7 @@ export const login = async(req, res) => {
   const queryUserExists="SELECT * FROM `user` where `email`=?";
   pool.query(queryUserExists,[email],(err,row,field)=>{
     if(row.length === 0) {
-      res.status(403).json({ user: 'Password is wrong' });
+      res.status(403).send({ user: 'Password is wrong' });
       return;
     }
     const xyz = compareSync(password, row[0].pass);
@@ -28,7 +28,7 @@ export const login = async(req, res) => {
             res.cookie('token',token,{maxAge:100000000000000});
             res.cookie('reFreshToken',refreshToken,{maxAge:1000000000000000});
 
-            res.status(200).json({
+            res.status(200).send({
               msg: 'Logged in!',
               token: token,
               user: row[0],
@@ -37,7 +37,7 @@ export const login = async(req, res) => {
         }
       );
     } else {
-      res.status(400).json({ user: 'Password is wrong' });
+      res.status(400).send({ user: 'Password is wrong' });
     }
   })
 };
@@ -54,13 +54,13 @@ export const SignUp = async (req, res) => {
       if (row.length === 0){
         pool.query(insertUser,[fullName,email,password],(err,row,field)=>{
           if (err) {
-            res.status(500).json({
+            res.status(500).send({
               success: 0,
               message: 'Cannot Register User',
               err:err
             });
           } else {
-            res.status(200).json({
+            res.status(200).send({
               success: 1,
               message: 'User Registered',
               data: row,
@@ -70,7 +70,7 @@ export const SignUp = async (req, res) => {
           }
         })
       } else if(row.length>0){
-          res.status(400).json({ 
+          res.status(400).send({ 
             success: 0,
             message: 'Duplicate Entry',
           });
@@ -83,17 +83,16 @@ export const EmailVerify = (req, res) => {
   const { id } = req.body;
 
   pool.query('select verified from user where id=?',id,(err,row,field)=>{
-    console.log(row);
     if (row[0].verified === 1){
-      res.status(400).json("Already Verified");
+      res.status(400).send("Already Verified");
     } else if (row[0].verified === 0) {
       pool.query('UPDATE user set verified = true where id=?',id,(err, row) => {
         if (err !== null) {
           console.log(err);
-          res.json({err:err});
+          res.send({err:err});
           return;
         }
-        res.status(200).json({status:'Success'});
+        res.status(200).send({status:'Success'});
       }
     );
     }
@@ -107,17 +106,17 @@ export const ForgotPassword = (req, res) => {
         console.log('error here' +err);
       }
       else if(results.length === 0)
-      res.status(204).json('No results')
+      res.status(204).send('No results')
 
       else
       {
         if(results[0].verified === '0')
         {
-          res.status(403).json({message:'Please verify first'});
+          res.status(403).send({message:'Please verify first'});
         }
         else
         {
-          res.status(200).json({
+          res.status(200).send({
             success: 1,
             message: 'User Registered',
             data: results,
@@ -143,12 +142,12 @@ export const ForgotPasswordChange = (req, res) => {
         console.log('error here' +err);
       }
       else if(results)
-      res.status(200).json({message: 'Password Changed',});
+      res.status(200).send({message: 'Password Changed',});
     });
 };
 
 
 
 export const isAuthorized=(req,res)=>{
-  res.status(200).json("Authorized");
+  res.status(200).send("Authorized");
 }
