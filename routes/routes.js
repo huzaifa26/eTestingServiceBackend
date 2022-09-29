@@ -3,11 +3,11 @@ const router = express.Router();
 
 import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange, isAuthorized} from '../Controllers/Auth.js';
 import { CreateCourse, getCourseNames, getCourses, getCourseCategories, joinCourse, getJoinedCourses, CourseContent, getCourseContent, enrolledLength, courseSetting, updateSetting, deleteCourse, manageUsers, deleteUserFromCourse, blockUserFromCourse, unblockUserFromCourse, changeKey } from '../Controllers/Course.js';
-import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion,editQuestionToPool, getPoolQuestions2} from "../Controllers/Pools.js";
+import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion,editQuestionToPool, getPoolQuestions2, deletePoolCategory} from "../Controllers/Pools.js";
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
 import { refreshToken } from '../Controllers/AuthenticateToken.js';
-import { addQuizResult, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, quiz, quizDelete, showQuizResult} from '../Controllers/Quiz.js';
+import { addQuizResult, addToTabFocus, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, getTabFocus, quiz, quizDelete, showQuizResult} from '../Controllers/Quiz.js';
 import { deleteAssignment, editAssignment, getAssignmentResult, getAssignments, submitAssignment, updateAssignmentResult, uploadAssignment } from '../Controllers/Assignment.js';
 
 router.get('/', (req, res) => {
@@ -51,6 +51,7 @@ router.post("/poolQuestions",authenticateToken, addQuestionToPool);
 router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
 router.get("/poolQuestions2/:userId/:courseId",authenticateToken, getPoolQuestions2);
 router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
+router.post("/deletePoolCategory",authenticateToken, deletePoolCategory);
 
 router.post('/quiz',authenticateToken,quiz)
 router.post('/editQuiz',authenticateToken,editQuiz)
@@ -61,6 +62,8 @@ router.get("/getAtempttedQuizQuestions/:userId/:quizId",authenticateToken,getAte
 router.post("/addQuizResult",authenticateToken,addQuizResult)
 router.post("/changeKey",authenticateToken,changeKey)
 router.get('/showQuizResult/:userId/:quizId',authenticateToken,showQuizResult)
+router.get('/getTabFocus/:userId/:quizId',authenticateToken,getTabFocus)
+router.post('/addToTabFocus',authenticateToken,addToTabFocus)
 
 router.post('/uploadAssignment',authenticateToken,uploadAssignment)
 router.post('/editAssignment',authenticateToken,editAssignment)

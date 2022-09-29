@@ -175,3 +175,15 @@ export const getPoolQuestions2 = (req,res)=>{
     })
   }
 
+  
+export const deletePoolCategory = async (req,res) =>
+{
+
+    const {id} =req.body
+    pool.query('DELETE FROM poolcategory where id=?',id,(err,row,field)=>{
+      if(err)
+      console.log(err)
+      if(row)
+      res.status(200).send({message:"deleted"});
+    })
+}

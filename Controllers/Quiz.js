@@ -21,20 +21,24 @@ export const quiz = async(req,res)=>
 
         if(roww)
         {
-            console.log(questions)
             questions.forEach((item,index)=>{
                 pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImg,item.points,item.time],(err,row,field)=>{
                     if(err)
                     console.log(err)
                     if (row)
                     {
-                        item.options.forEach((item,index) => {
-                            if(item !== null)
+                        item.options.forEach((items,index) => {
+                            if(items !== null)
                             {
-                            pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,item],(error,rows,fields)=>{
+                                console.log("--------------------------item-------------------------------")
+                                console.log(items)
+                            pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,items],(error,rows,fields)=>{
                                 if(error)
-                                console.log(error)
-                                if (rows){console.log('got response')}
+                                {
+                                    console.log(error)
+                                    console.log(items)
+                                    console.log('inside sssss')
+                                }
                             })}
                         })
                     }})
@@ -97,7 +101,6 @@ export const editQuiz = async(req,res)=>
         }
     })
 
-    console.log(questions)
 }
 
 export const getAllQuizzes = async (req,res)=>{
@@ -130,9 +133,7 @@ export const getAllQuizzes = async (req,res)=>{
                     pool.query("select * from quizquestionoptions where quizquestionid=?", [row1[j].id],(err,row2,field)=>{
                         row1[j].options=row2
                         row[i].questions=row1
-                        console.log(row[i])
                         if(i === row.length-1 && j===row1.length-1){ // question 3. quizoption=2. row.lenghth=3
-                            console.log("-------------------------");
                             res.status(200).send({data:row})
                         }
                     })
@@ -150,25 +151,23 @@ export const getAllQuizzes = async (req,res)=>{
 export const atempttedQuizQuestions = async(req,res)=>
 {
     const {userId,quizId,quizQuestionId,correctOption,selectedOption,obtainedMarks}=(req.body);
+    console.log(req.body)
+    console.log('----------------------------------------------------------')
     pool.query('INSERT INTO attemptedquizquestions (userId,quizId,quizQuestionId,selectedOption,obtainedMarks) VALUES (?,?,?,?,?)',[userId,quizId,quizQuestionId,selectedOption,obtainedMarks],(err,row,fields)=>{
         if (err)
         console.log(err)
-        if(row)
-        console.log(row)
+        
+        res.send(row)
     })
 }
 
 export const getAtempttedQuizQuestions = async(req,res)=>
 {
     const {userId,quizId} = req.params
-    console.log('i am here')
-    console.log(userId)
-    console.log(quizId)
     pool.query('SELECT * FROM attemptedquizquestions WHERE userId=? AND quizId=?',[userId,quizId],(err,row,field)=>{
         if (err)
         console.log(err)
         if(row)
-        console.log(row)
         res.send(row)
     })
 }
@@ -207,9 +206,12 @@ export const addQuizResult = async(req,res)=>
                 pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions) VALUES (?,?,?,?,?,?)',[quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestionsLength],(e,r,f)=>
                 {
                         if(e)
-                        console.log('error')    
+                        {
+                            console.log('error')    
+                            console.log(e)
+                        }
+
                         if(r)
-                        console.log(r)
                         res.send(r)
                 })
                 
@@ -222,14 +224,14 @@ export const addQuizResult = async(req,res)=>
 export const showQuizResult =  async(req,res)=>
 {
     const {userId,quizId} = req.params
-    console.log(userId)
-    console.log(quizId)
+    console.log('inside quiz result')
+    
     pool.query('SELECT * FROM quizresult where userId=? AND quizId=?',[userId,quizId],(err,row,field)=>
     {
             if (err)
             console.log(err)
             if(res)
-            {console.log(row)
+            {
             res.send(row)}
     })
 }
@@ -237,11 +239,48 @@ export const showQuizResult =  async(req,res)=>
 export const quizDelete = async(req,res) =>
 {
     const {id} = req.body
-    console.log(id)
     pool.query('DELETE FROM quiz where id=?',id,(err,row,field)=>{
         if(err)
         console.log(err)
         if(row)
         res.status(200).send({message:"deleted"});
+      })
+}
+
+export const getTabFocus = async(req,res) =>
+{
+    const {userId,quizId} = req.params
+    pool.query('Select * FROM tabfocus where userId=? AND quizId=?',[userId,quizId],(err,row,field)=>{
+        if(err)
+        console.log(err)
+        if(row)
+        {
+            res.status(200).send({data:row});
+        }
+      })
+}
+
+export const addToTabFocus = async(req,res) =>
+{
+    const {userId,quizId} = req.body
+
+    function getTime() {
+        var date = new Date()
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString();
+    }
+      
+    let yourDate=getTime();
+    yourDate=yourDate.toString().split("T");
+    yourDate[1]=yourDate[1].toString().split(".")[0];
+    yourDate=yourDate.toString().replaceAll(","," "); 
+ 
+    pool.query('INSERT INTO tabfocus (userId,quizId,lostFocusTime) VALUES (?,?,?)',[userId,quizId,yourDate],(err,row,field)=>{
+        if(err)
+        console.log(err)
+        if(row)
+        {
+            res.status(200).send({data:'Added'});
+        }
       })
 }
