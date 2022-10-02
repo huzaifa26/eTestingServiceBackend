@@ -7,9 +7,16 @@ dotenv.config();
 
 export const CreateCourse = async(req,res)=>{
     const { userId, imageUrl, courseName, description , createTime } = req.body;
-    const createCourseQuery="INSERT INTO courses (userId,imageUrl,courseName,courseDescription,createTime) VALUES (?,?,?,?,?)";
+    const createCourseQuery="INSERT INTO courses (userId,imageUrl,courseName,courseDescription,createTime,courseKey) VALUES (?,?,?,?,?,?)";
+    var count = 6
+    var chars = 'acdefhiklmnoqrstuvwxyz0123456789'.split('');
+    var result = '';
+    for(var i=0; i<6; i++){
+      var x = Math.floor(Math.random() * chars.length);
+      result += chars[x];
+    }
 
-    pool.query(createCourseQuery,[userId, imageUrl, courseName, description, createTime],(err,row,field)=>{
+    pool.query(createCourseQuery,[userId, imageUrl, courseName, description, createTime, result],(err,row,field)=>{
         console.log(err);
         if (err) {
             console.log(err);
@@ -38,14 +45,17 @@ export const getCourses= async(req,res)=>{
 }
 export const getJoinedCourses= async(req,res)=>{
     const {userId}=req.params;
-    // console.log("here" +userId)
-    pool.query("SELECT courses.id,courses.userId,courses.courseDescription,courses.courseName,courses.imageUrl FROM courses INNER JOIN enrolled ON courses.id = enrolled.courseId WHERE enrolled.userId=?",[userId],(err,row,field)=>{
-      if(row.length>0)
+    console.log('--------------------------------------------')
+    console.log("here now" )
+    pool.query("SELECT courses.id,enrolled.blocked,courses.userId,courses.courseDescription,courses.courseName,courses.imageUrl FROM courses INNER JOIN enrolled ON courses.id = enrolled.courseId WHERE enrolled.userId=?",[userId],(err,row,field)=>{
+      if(err)
       {
-        res.status(200).send({data:row})
+        console.log(err)
       }
-      else{
-        console.log('OK')
+      if(row)
+      {
+        console.log('sent')
+        res.status(200).send({data:row})
       }
     })
 }
@@ -67,30 +77,34 @@ export const getCourseCategories= async(req,res)=>{
 
 
 export const joinCourse= async(req,res)=>{
-  const{userId , joiningkey,joinTime} = req.body
+  const{userId,joiningkey,joinTime} = req.body
   pool.query("Select * from courses where courseKey=?",joiningkey,(err,row,field)=>
   {
     if (err)
     {console.log(err)}
-    if(row.length === 0)
-    {res.status(400).send({message:'Wrong Key'})}
-    if(row.length>0)
-    {pool.query("Insert into enrolled (courseId,userId,joinedTime) VALUES (?,?,?)" ,[joiningkey,userId,joinTime], (err,row,field) =>
+    if(row)
     {
-      if (err)
+      if(row.length === 0)
+      {res.status(400).send({message:'Wrong Key'})}
+      if(row.length>0)
+      {console.log(row)
+        pool.query("Insert into enrolled (courseId,userId,joinedTime) VALUES (?,?,?)" ,[row[0].id,userId,joinTime], (error,rows,field) =>
       {
-        if(err.code === 'ER_DUP_ENTRY')
-        {res.status(401).send({message:'Duplicate'})}
-        else
-        console.log(err)}
-      if(row)
-      {
-        if(row.affectedRows === 1)
-        {res.status(200).send({message:'success'})}
-        else
-        {console.log("here")}
-      }
-    })}
+        if (error)
+        {
+          if(error.code === 'ER_DUP_ENTRY')
+          {res.status(401).send({message:'Duplicate'})}
+          else
+          console.log(err)}
+        if(rows)
+        {
+          if(rows.affectedRows === 1)
+          {res.status(200).send({message:'success'})}
+          else
+          {console.log("here")}
+        }
+      })}
+    }
   })
 }
 
@@ -188,8 +202,8 @@ export const manageUsers = (req,res) =>
 
 export const deleteUserFromCourse =(req,res) =>
 {
-  const {id} = (req.body)
-  pool.query('DELETE from enrolled WHERE userId=?',[id],(err,row,field) =>
+  const {id,courseId} = (req.body)
+  pool.query('DELETE from enrolled WHERE userId=? and courseId=?',[id,courseId],(err,row,field) =>
   {
       if(err)
       console.log(err)
@@ -201,8 +215,8 @@ export const deleteUserFromCourse =(req,res) =>
 
 export const blockUserFromCourse =(req,res) =>
 {
-  const {id} = (req.body)
-  pool.query('UPDATE enrolled SET blocked=1 WHERE userId=?',[id],(err,row,field) =>
+  const {id,courseId} = (req.body)
+  pool.query('UPDATE enrolled SET blocked=1 WHERE userId=? and courseId=?',[id,courseId],(err,row,field) =>
 
   {
       if(err)
@@ -215,8 +229,8 @@ export const blockUserFromCourse =(req,res) =>
 
 export const unblockUserFromCourse =(req,res) =>
 {
-  const {id} = (req.body)
-  pool.query('UPDATE enrolled SET blocked=0 WHERE userId=?',[id],(err,row,field) =>
+  const {id,courseId} = (req.body)
+  pool.query('UPDATE enrolled SET blocked=0 WHERE userId=? and courseId',[id,courseId],(err,row,field) =>
   {
       if(err)
       console.log(err)

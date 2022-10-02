@@ -45,10 +45,10 @@ export const getPoolCategory = async(req,res)=>{
 export const addQuestionToPool =async (req,res)=>{
     console.log(req.body)
 
-    const {courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,options}=(req.body);
-    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+    const {courseId,poolCategory,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time,options}=(req.body);
+    const addQuestionToPoolQuery="INSERT INTO poolquestions (courseId,poolCategory,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    pool.query("INSERT INTO poolquestions (courseId,poolCategoryId,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[courseId,poolCategory,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time],(err,row,field)=>{
+    pool.query("INSERT INTO poolquestions (courseId,poolCategoryId,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time) VALUES (?,?,?,?,?,?,?,?,?,?,?)",[courseId,poolCategory,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time],(err,row,field)=>{
         if(err)
         console.log(err)
         if (row)
@@ -102,7 +102,7 @@ export const deletQuestion = async(req,res)=>{
 }
 
 export const editQuestionToPool =async (req,res)=>{
-    const {id,courseId,poolCategoryId,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,options}=(req.body);
+    const {id,courseId,poolCategoryId,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time,options}=(req.body);
 
     pool.query("delete from poolquestionoptions where poolquestionId=?",id,(err,row,field)=>{
         if(err) {
@@ -112,7 +112,7 @@ export const editQuestionToPool =async (req,res)=>{
         if(row)
         {
             console.log('deleted')
-            pool.query('Update poolquestions SET courseId=?,poolCategoryId=?,userId=?,courseName=?,question=?,questionImage=?,correctOption=?,questionType=?,isMathJax=?,points=?,time=? WHERE id=? ',[courseId,poolCategoryId,userId,courseName,question,questionImg,correctOption,questionType,isMathJax,points,time,id],(err,row,field) =>
+            pool.query('Update poolquestions SET courseId=?,poolCategoryId=?,userId=?,courseName=?,question=?,questionImage=?,correctOption=?,questionType=?,isMathJax=?,points=?,time=? WHERE id=? ',[courseId,poolCategoryId,userId,courseName,question,questionImage,correctOption,questionType,isMathJax,points,time,id],(err,row,field) =>
             {
                 if(err)
                 console.log(err)

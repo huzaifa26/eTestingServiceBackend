@@ -22,7 +22,7 @@ export const quiz = async(req,res)=>
         if(roww)
         {
             questions.forEach((item,index)=>{
-                pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImg,item.points,item.time],(err,row,field)=>{
+                pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImage,item.points,item.time],(err,row,field)=>{
                     if(err)
                     console.log(err)
                     if (row)
@@ -79,7 +79,7 @@ export const editQuiz = async(req,res)=>
                 if(roww)
                 {
                     questions.forEach((item,index2)=>{
-                        pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImg,item.points,item.time],(err,row,field)=>{
+                        pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImage,item.points,item.time],(err,row,field)=>{
                             if(err)
                             console.log(err)
                             if (row)
@@ -177,8 +177,8 @@ export const addQuizResult = async(req,res)=>
     const {userId,quizId} = req.body
     let totalQuestionsLength;
     let obtainedMarks=0;
-    let totalMarks = 0
-    let attemptedQuestions = 0
+    let totalMarks = 0;
+    let attemptedQuestions = 0;
 
     pool.query('SELECT * FROM quizquestions WHERE quizId=?',[quizId],(err,row,field)=>{
         if (err)
@@ -203,7 +203,7 @@ export const addQuizResult = async(req,res)=>
                 }
                 )
                 console.log(obtainedMarks)
-                pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions) VALUES (?,?,?,?,?,?)',[quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestionsLength],(e,r,f)=>
+                pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions,cancelled) VALUES (?,?,?,?,?,?,false)',[quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestionsLength],(e,r,f)=>
                 {
                         if(e)
                         {
@@ -283,4 +283,50 @@ export const addToTabFocus = async(req,res) =>
             res.status(200).send({data:'Added'});
         }
       })
+}
+
+export const quizCancellResult = async(req,res) =>
+{
+    const {userId,quizId} = req.body
+    let totalQuestionsLength;
+    let obtainedMarks=0;
+    let totalMarks = 0;
+    let attemptedQuestions = 0;
+
+    pool.query('SELECT * FROM quizquestions WHERE quizId=?',[quizId],(err,row,field)=>{
+        if (err)
+        console.log(err)
+        if (row)
+        {
+            totalQuestionsLength = row.length
+            row.forEach((value,index) =>
+            {
+                totalMarks += value.points
+            })
+            pool.query('SELECT obtainedMarks FROM attemptedquizquestions WHERE userId=? AND quizId=?',[userId,quizId],(error,rows,fields)=>{
+                if (error)
+                console.log(error)
+                if(rows)
+                {
+                attemptedQuestions = rows.length
+                rows.forEach((value,index) =>
+                {
+                    obtainedMarks +=(value.obtainedMarks)
+                }
+                )
+                pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions,cancelled) VALUES (?,?,?,0,?,?,true)',[quizId,userId,totalMarks,attemptedQuestions,totalQuestionsLength],(e,r,f)=>
+                {
+                        if(e){
+                            if(e.code === 'ER_DUP_ENTRY')
+                            res.status(200).send({data:'Already added'});
+                            else { console.log(e) }
+                        }
+                        if(r)
+                        {
+                            res.status(200).send({data:'Added'});
+                        }
+                })
+            }
+            })
+        }})
 }

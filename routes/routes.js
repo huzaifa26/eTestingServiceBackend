@@ -7,7 +7,7 @@ import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,de
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
 import { refreshToken } from '../Controllers/AuthenticateToken.js';
-import { addQuizResult, addToTabFocus, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, getTabFocus, quiz, quizDelete, showQuizResult} from '../Controllers/Quiz.js';
+import { addQuizResult, addToTabFocus, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, getTabFocus, quiz, quizCancellResult, quizDelete, showQuizResult} from '../Controllers/Quiz.js';
 import { deleteAssignment, editAssignment, getAssignmentResult, getAssignments, submitAssignment, updateAssignmentResult, uploadAssignment } from '../Controllers/Assignment.js';
 
 router.get('/', (req, res) => {
@@ -64,6 +64,7 @@ router.post("/changeKey",authenticateToken,changeKey)
 router.get('/showQuizResult/:userId/:quizId',authenticateToken,showQuizResult)
 router.get('/getTabFocus/:userId/:quizId',authenticateToken,getTabFocus)
 router.post('/addToTabFocus',authenticateToken,addToTabFocus)
+router.post('/quizCancellResult',authenticateToken,quizCancellResult)
 
 router.post('/uploadAssignment',authenticateToken,uploadAssignment)
 router.post('/editAssignment',authenticateToken,editAssignment)
