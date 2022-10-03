@@ -94,3 +94,15 @@ export const updateAssignmentResult = async (req,res) =>
     });
     
 }
+export const getStudentResult = async (req,res) =>
+{
+    console.log(req.params)
+    const {userId,assignmentId} = req.params
+    pool.query('SELECT * FROM submittedassignments where userId=? and assignmentId=?',[userId,assignmentId],(err,row,field) =>
+    {
+        if(err)
+        {console.log(err)}
+        if(row)
+        {res.status(200).send({data:row})}
+    })
+}

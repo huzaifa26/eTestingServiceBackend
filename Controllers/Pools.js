@@ -19,8 +19,8 @@ export const createPoolCategory = async(req,res)=>{
               message: 'Cannot Register Pool Category',
               err:err
             });
-          } else {
-              console.log("Success");
+          }
+        if (row) {
               res.status(200).send({
               success: 1,
               message: 'Pool Category Registered',

@@ -216,27 +216,63 @@ export const deleteUserFromCourse =(req,res) =>
 export const blockUserFromCourse =(req,res) =>
 {
   const {id,courseId} = (req.body)
-  pool.query('UPDATE enrolled SET blocked=1 WHERE userId=? and courseId=?',[id,courseId],(err,row,field) =>
-
+  pool.query('Select * from courses where id=?',courseId,(error,row,field) =>
   {
-      if(err)
-      console.log(err)
-      if(row){
-      res.status(200).send({message: 'blocked',})
-  };
+    if(error)
+    console.log(error)
+    if(row)
+    {
+      let text = 'Your access was restricted in '+row[0].courseName+' class.'
+      pool.query('Insert into notification (courseId,userId,notificationText,type) VALUES(?,?,?,?)',[courseId,id,text,'blocked'],(e,r,f) =>
+      {
+        if(e)
+        console.log(e)
+        if(r)
+        {
+          pool.query('UPDATE enrolled SET blocked=1 WHERE userId=? and courseId=?',[id,courseId],(err,row,field) =>
+          {
+              if(err)
+              console.log(err)
+              if(row){
+              res.status(200).send({message: 'blocked',})
+          };
+          })
+        }
+      } )
+    }
   })
+
 }
 
 export const unblockUserFromCourse =(req,res) =>
 {
   const {id,courseId} = (req.body)
-  pool.query('UPDATE enrolled SET blocked=0 WHERE userId=? and courseId',[id,courseId],(err,row,field) =>
+
+  pool.query('Select * from courses where id=?',courseId,(error,row,field) =>
   {
-      if(err)
-      console.log(err)
-      if(row){
-      res.status(200).send({message: 'unblocked',})
-  };
+    if(error)
+    console.log(error)
+    if(row)
+    {
+      let text = 'Your access was unrestricted in '+row[0].courseName+' class.'
+      pool.query('Insert into notification (courseId,userId,notificationText,type) VALUES(?,?,?,?)',[courseId,id,text,'unblocked'],(e,r,f) =>
+      {
+        if(e)
+        console.log(e)
+        if(r)
+        {
+          pool.query('UPDATE enrolled SET blocked=0 WHERE userId=? and courseId',[id,courseId],(err,row,field) =>
+          {
+              if(err)
+              console.log(err)
+              if(row){
+        
+              res.status(200).send({message: 'unblocked',})
+          };
+          })
+        }
+      })
+    }
   })
 }
 
@@ -257,5 +293,30 @@ export const changeKey =(req,res) =>
       if(row){
       res.status(200).send({message: 'Key Changed',})
   };
+  })
+}
+
+export const getNotification =(req,res) =>
+{
+  const{courseId,userId} = req.params
+  console.log(userId)
+  pool.query('Select * from notification where userId=?',userId,(err,row,field) =>
+  {
+    if(err)
+    console.log(err)
+    if(row)
+    res.status(200).send({data:row})
+  })
+}
+
+export const removeNotification = (req,res) =>
+{
+  const {id} =req.body
+  pool.query('Delete from notification where id=?',id,(err,row,field) =>
+  {
+    if(err)
+    console.log(err)
+    if(row)
+    res.status(200).send({message:'deleted'})
   })
 }
