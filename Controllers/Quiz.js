@@ -21,25 +21,35 @@ export const quiz = async(req,res)=>
 
         if(roww)
         {
-            questions.forEach((item,index)=>{
+            questions.forEach((item,indexs)=>{
                 pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImage,item.points,item.time],(err,row,field)=>{
                     if(err)
                     console.log(err)
                     if (row)
                     {
-                        item.options.forEach((items,index) => {
+                        let length = questions.length
+                        item.options.forEach((items,indexss) => {
                             if(items !== null)
                             {
-                                console.log("--------------------------item-------------------------------")
-                                console.log(items)
                             pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,items],(error,rows,fields)=>{
                                 if(error)
                                 {
                                     console.log(error)
-                                    console.log(items)
-                                    console.log('inside sssss')
                                 }
+                                
+                                if(indexs === length-1 && item.options.length-1 === indexss)
+                                {
+                                    console.log('sent')
+                                    res.status(200).send({message:'Quiz Created'})}
                             })}
+                            else
+                            {
+                                if(indexs === length-1)
+                                {
+                                    console.log('sent')
+                                    res.status(200).send({message:'Quiz Created'})}
+                               
+                            }
                         })
                     }})
             })
@@ -78,23 +88,38 @@ export const editQuiz = async(req,res)=>
         
                 if(roww)
                 {
-                    questions.forEach((item,index2)=>{
+                    questions.forEach((item,indexs)=>{
                         pool.query("INSERT INTO quizquestions (quizId,correctOption,isMathJax,questionType,question,questionImage,points,time) VALUES (?,?,?,?,?,?,?,?)",[roww.insertId,item.correctOption,item.isMathJax,item.questionType,item.question,item.questionImage,item.points,item.time],(err,row,field)=>{
                             if(err)
                             console.log(err)
                             if (row)
                             {
-                                item.options.forEach((item,index) => {
-                                    if(item !== null)
+                                let length = questions.length
+                               
+                                item.options.forEach((items,indexss) => {
+                                    if(items !== null)
                                     {
-                                    pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,item],(error,rows,fields)=>{
+                                    pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)",[row.insertId,items],(error,rows,fields)=>{
                                         if(error)
-                                        console.log(error)
-                                        if (rows){
+                                        {
+                                            console.log(error)
+                                        }
+                                        
+                                        if(indexs === length-1 && item.options.length-1 === indexss)
+                                        {
+                                            console.log('sent')
+                                            res.status(200).send({message:'Quiz Created'})
                                         }
                                     })}
-                                })
-                            }})
+                                    else
+                                    {
+                                        if(indexs === length-1)
+                                        {
+                                            console.log('sent')
+                                            res.status(200).send({message:'Quiz Created'})}
+                                    }
+                                })}
+                            })
                     })
                 }
             })

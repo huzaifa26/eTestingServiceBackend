@@ -320,3 +320,14 @@ export const removeNotification = (req,res) =>
     res.status(200).send({message:'deleted'})
   })
 }
+export const courseInfo =(req,res) =>
+{
+  const{courseId} = req.params
+  pool.query('SELECT courses.id,courses.courseName,courses.courseDescription,user.fullName,user.email FROM courses INNER JOIN user ON courses.userId = user.id WHERE courses.id =?',courseId,(err,row,field) =>
+  {
+    if(err)
+    console.log(err)
+    if(row)
+    res.status(200).send({data:row})
+  })
+}

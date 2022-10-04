@@ -17,10 +17,26 @@ export const uploadAssignment= async(req,res)=>
     })
 }
 
-export const getAssignments = async (req,res) =>
-{
-    pool.query('select * from assignment where courseId=?',req.params.courseId,(err,row,field)=>{
-      res.status(200).send({data:row});
+export const getAssignments = async (req, res) => {
+    console.log(req.params.userId)
+    pool.query('select * from assignment where courseId=?', req.params.courseId, (err, row, field) => {
+        for(let i=0;i<row.length;i++){
+            pool.query("select * from submittedassignments where assignmentId=? and userId=?",[row[i].id,req.params.userId],(err,row1,field)=>{
+                if (err) res.send(err)
+
+                if(row1?.length === 0){
+                    row[i].submitted=0;
+                }
+                if(row1?.length > 0){
+                    row[i].submitted=1;
+                }
+
+                if(i === row.length-1){
+                    console.log(row)
+                    res.send({ data: row });
+                }
+            })
+        }
     })
 }
 export const editAssignment = async (req,res) =>

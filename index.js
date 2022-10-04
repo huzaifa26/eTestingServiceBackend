@@ -19,12 +19,20 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 
-export const pool= mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DATABASE,
-});
+const createConnection=async()=>{
+  return new Promise((resolve,reject)=>{
+    resolve(mysql.createConnection({
+        host: process.env.HOST,
+        user: process.env.USER,
+        password: process.env.PASSWORD,
+        database: process.env.DATABASE,
+      }))
+    reject(null);
+  })
+}
+
+export let pool=null
+await createConnection().then(res=>{console.log("Database Connected");pool=res}).catch(err=>{console.log(err)})
 
 app.use('/api', router);
 

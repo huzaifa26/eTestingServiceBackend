@@ -2,8 +2,8 @@ import express from 'express';
 const router = express.Router();
 
 import {login,SignUp,EmailVerify,ForgotPassword,ForgotPasswordChange, isAuthorized} from '../Controllers/Auth.js';
-import { CreateCourse, getCourseNames, getCourses, getCourseCategories, joinCourse, getJoinedCourses, CourseContent, getCourseContent, enrolledLength, courseSetting, updateSetting, deleteCourse, manageUsers, deleteUserFromCourse, blockUserFromCourse, unblockUserFromCourse, changeKey, getNotification, removeNotification } from '../Controllers/Course.js';
-import {createPoolCategory,getPoolCategory,addQuestionToPool,getPoolQuestions,deletQuestion,editQuestionToPool, getPoolQuestions2, deletePoolCategory} from "../Controllers/Pools.js";
+import { CreateCourse, getCourseNames, getCourses, getCourseCategories, joinCourse, getJoinedCourses, CourseContent, getCourseContent, enrolledLength, courseSetting, updateSetting, deleteCourse, manageUsers, deleteUserFromCourse, blockUserFromCourse, unblockUserFromCourse, changeKey, getNotification, removeNotification, courseInfo } from '../Controllers/Course.js';
+import {createPoolCategory,getPoolCategory,addQuestionToPool,deletQuestion,editQuestionToPool, getPoolQuestions2, deletePoolCategory, getPoolQuestions3} from "../Controllers/Pools.js";
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import {getUser, updateUser} from "../Controllers/User.js";
 import { refreshToken } from '../Controllers/AuthenticateToken.js';
@@ -48,14 +48,15 @@ router.post('/deleteUserFromCourse',authenticateToken,deleteUserFromCourse)
 router.post('/blockUserFromCourse',authenticateToken,blockUserFromCourse)
 router.post('/unblockUserFromCourse',authenticateToken,unblockUserFromCourse)
 router.get('/enrolledLength/:courseId',authenticateToken,enrolledLength)
+router.get('/courseInfo/:courseId',authenticateToken,courseInfo)
 
 // POOLS
 router.post("/poolCategory",authenticateToken, createPoolCategory);
 router.get("/poolCategory/:courseId/:userId",authenticateToken, getPoolCategory);
 router.post("/editQuestionToPool",authenticateToken, editQuestionToPool);
 router.post("/poolQuestions",authenticateToken, addQuestionToPool);
-router.get("/poolQuestions/:userId",authenticateToken, getPoolQuestions);
-router.get("/poolQuestions2/:userId/:courseId",authenticateToken, getPoolQuestions2);
+router.get("/poolQuestions2/:poolCategoryId/:courseId",authenticateToken, getPoolQuestions2);
+router.get("/poolQuestions3/:userId/:courseId",authenticateToken, getPoolQuestions3);
 router.post("/deletepoolQuestions",authenticateToken, deletQuestion);
 router.post("/deletePoolCategory",authenticateToken, deletePoolCategory);
 
@@ -82,7 +83,7 @@ router.post('/uploadAssignment',authenticateToken,uploadAssignment)
 router.post('/editAssignment',authenticateToken,editAssignment)
 router.post('/submitAssignment',authenticateToken,submitAssignment)
 router.post('/updateAssignmentResult',authenticateToken,updateAssignmentResult)
-router.get('/getAssignments/:courseId',authenticateToken,getAssignments)
+router.get('/getAssignments/:courseId/:userId',authenticateToken,getAssignments)
 router.get('/deleteAssignment/:id',authenticateToken,deleteAssignment)
 router.get('/getAssignmentResult/:id',authenticateToken,getAssignmentResult)
 router.get('/getStudentResult/:userId/:assignmentId',authenticateToken,getStudentResult)
