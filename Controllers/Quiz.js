@@ -113,7 +113,7 @@ export const editQuiz = async(req,res)=>
                                     })}
                                     else
                                     {
-                                        if(indexs === length-1)
+                                        if(indexs === length-1 && item.options.length-1 === indexss)
                                         {
                                             console.log('sent')
                                             res.status(200).send({message:'Quiz Created'})}
