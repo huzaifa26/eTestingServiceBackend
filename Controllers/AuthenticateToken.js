@@ -17,10 +17,10 @@ export function authenticateToken(req, res, next) {
   // if (authcookie === undefined){
   //   realCookie=authcookie1
   // } else {
-    realCookie=authcookie;
+  realCookie = authcookie;
   // }
 
-  if (realCookie == null ) return res.sendStatus(401);
+  if (realCookie == null) return res.sendStatus(401);
 
   Jwt.verify(realCookie, process.env.SECRETKEY, (err, user) => {
     if (err) {
@@ -32,27 +32,27 @@ export function authenticateToken(req, res, next) {
   })
 }
 
-export const refreshToken=(req,res,next)=>{
+export const refreshToken = (req, res, next) => {
   const authcookie = req.cookies.token;
   const refreshToken = req.cookies.reFreshToken;
 
-  if((refreshToken) && (refreshToken in tokenList)) {
+  if ((refreshToken) && (refreshToken in tokenList)) {
     let decoded = Jwt.verify(refreshToken, process.env.SECRETKEY);
 
     const token1 = Jwt.sign({
       username: decoded.username,
       userId: decoded.userId,
-    },process.env.SECRETKEY,{expiresIn: '1d'});
+    }, process.env.SECRETKEY, { expiresIn: '1d' });
 
-      const user = {
-          "username": decoded.username,
-          "userId": decoded.userId
-      }
-      const token = Jwt.sign(user, process.env.SECRETKEY, { expiresIn: "10s"})
-      tokenList[refreshToken] = token;
-      res.cookie('token',token,{maxAge:100000000000});
-      res.status(200).send(token); 
+    const user = {
+      "username": decoded.username,
+      "userId": decoded.userId
+    }
+    const token = Jwt.sign(user, process.env.SECRETKEY, { expiresIn: "10s" })
+    tokenList[refreshToken] = token;
+    res.cookie('token', token, { maxAge: 100000000000 });
+    res.status(200).send(token);
   } else {
-      res.status(404).send('Invalid request')
+    res.status(404).send('Invalid request')
   }
 }
