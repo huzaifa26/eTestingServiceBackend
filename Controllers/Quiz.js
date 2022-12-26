@@ -4,6 +4,8 @@ import Jwt from 'jsonwebtoken';
 import dayjs from "dayjs";
 import { pool } from '../index.js';
 import { getUsers, io } from '../routes/routes.js'
+import axios from 'axios'
+import nodemailer from 'nodemailer'
 dotenv.config();
 
 export const quiz = async (req, res) => {
@@ -27,25 +29,39 @@ export const quiz = async (req, res) => {
                         console.log(err)
                     if (row) {
                         let length = questions.length
-                        item.options.forEach((items, indexss) => {
-                            if (items !== null) {
-                                pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)", [row.insertId, items], (error, rows, fields) => {
-                                    if (error) {
-                                        console.log(error)
-                                    }
+                        console.log(item.options);
+                        // console.log(questions.length);
+                        // console.log(indexs + 1);
+                        console.log(item.options.length);
+                        if (item.options.length === 0) {
 
-                                    if (indexs === length - 1 && item.options.length - 1 === indexss) {
+                            //do nothing
+                            if (questions.length === indexs + 1) {
+                                res.status(200).send({ message: 'Quiz Created' })
+                            }
+
+                        }
+                        else {
+                            item.options.forEach((items, indexss) => {
+                                if (items !== null) {
+                                    pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)", [row.insertId, items], (error, rows, fields) => {
+                                        if (error) {
+                                            console.log(error)
+                                        }
+
+                                        if (indexs === length - 1 && item.options.length - 1 === indexss) {
+                                            res.status(200).send({ message: 'Quiz Created' })
+                                        }
+                                    })
+                                }
+                                else {
+                                    if (indexs === length - 1 && item.length === indexss + 1) {
                                         res.status(200).send({ message: 'Quiz Created' })
                                     }
-                                })
-                            }
-                            else {
-                                if (indexs === length - 1) {
-                                    res.status(200).send({ message: 'Quiz Created' })
-                                }
 
-                            }
-                        })
+                                }
+                            })
+                        }
                     }
                 })
             })
@@ -88,24 +104,33 @@ export const editQuiz = async (req, res) => {
                             if (row) {
                                 let length = questions.length
 
-                                item.options.forEach((items, indexss) => {
-                                    if (items !== null) {
-                                        pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)", [row.insertId, items], (error, rows, fields) => {
-                                            if (error) {
-                                                console.log(error)
-                                            }
+                                if (item.options.length === 0) {
+                                    //do nothing
+                                    if (questions.length === indexs + 1) {
+                                        res.status(200).send({ message: 'Quiz Created' })
+                                    }
 
+                                }
+                                else {
+                                    item.options.forEach((items, indexss) => {
+                                        if (items !== null) {
+                                            pool.query("INSERT INTO quizquestionoptions (quizquestionId,options) VALUES (?,?)", [row.insertId, items], (error, rows, fields) => {
+                                                if (error) {
+                                                    console.log(error)
+                                                }
+
+                                                if (indexs === length - 1 && item.options.length - 1 === indexss) {
+                                                    res.status(200).send({ message: 'Quiz Created' })
+                                                }
+                                            })
+                                        }
+                                        else {
                                             if (indexs === length - 1 && item.options.length - 1 === indexss) {
                                                 res.status(200).send({ message: 'Quiz Created' })
                                             }
-                                        })
-                                    }
-                                    else {
-                                        if (indexs === length - 1 && item.options.length - 1 === indexss) {
-                                            res.status(200).send({ message: 'Quiz Created' })
                                         }
-                                    }
-                                })
+                                    })
+                                }
                             }
                         })
                     })
@@ -162,12 +187,33 @@ export const getAllQuizzes = async (req, res) => {
 }
 
 export const atempttedQuizQuestions = async (req, res) => {
-    const { userId, quizId, quizQuestionId, correctOption, selectedOption, obtainedMarks } = (req.body);
-    pool.query('INSERT INTO attemptedquizquestions (userId,quizId,quizQuestionId,selectedOption,obtainedMarks) VALUES (?,?,?,?,?)', [userId, quizId, quizQuestionId, selectedOption, obtainedMarks], (err, row, fields) => {
-        if (err) { console.log(err) }
+    const { userId, quizId, quizQuestionId, correctOption, selectedOption, obtainedMarks, subjective, points } = (req.body);
 
-        if (row) { res.send(row) }
-    })
+    if (subjective === true) {
+        let data2 = {
+            sentence1: correctOption,
+            sentence2: selectedOption,
+        }
+
+        axios.post("http://127.0.0.1:8000/question-grading/", data2)
+            .then((ress) => {
+                function getMarks(score, maxMarks) {
+                    return score * maxMarks;
+                }
+                const marks = getMarks(ress.data.grade, points)
+                pool.query('INSERT INTO attemptedquizquestions (userId,quizId,quizQuestionId,selectedOption,obtainedMarks) VALUES (?,?,?,?,?)', [userId, quizId, quizQuestionId, selectedOption, marks], (err, row, fields) => {
+                    if (err) { console.log(err) }
+                    if (row) { console.log('added'); res.send(row); }
+                })
+            })
+    }
+    else {
+
+        pool.query('INSERT INTO attemptedquizquestions (userId,quizId,quizQuestionId,selectedOption,obtainedMarks) VALUES (?,?,?,?,?)', [userId, quizId, quizQuestionId, selectedOption, obtainedMarks], (err, row, fields) => {
+            if (err) { console.log(err) }
+            if (row) { console.log('added'); res.send(row) }
+        })
+    }
 }
 
 export const getAtempttedQuizQuestions = async (req, res) => {
@@ -195,10 +241,12 @@ export const addQuizResult = async (req, res) => {
             row.forEach((value, index) => {
                 totalMarks += value.points
             })
-            pool.query('SELECT obtainedMarks FROM attemptedquizquestions WHERE userId=? AND quizId=?', [userId, quizId], (error, rows, fields) => {
+            console.log(userId, quizId)
+            pool.query('SELECT * FROM attemptedquizquestions WHERE userId=? AND quizId=?', [userId, quizId], (error, rows, fields) => {
                 if (error)
                     console.log(error)
                 if (rows) {
+                    console.log(rows)
                     attemptedQuestions = rows.length
                     rows.forEach((value, index) => {
                         obtainedMarks += (value.obtainedMarks)
@@ -319,9 +367,6 @@ export const quizCancellResult = async (req, res) => {
 
 export const QuizNotification = async (req, res) => {
 
-
-    console.log('inside quiz notification')
-
     function getDifference(createdAt) {
         const firstDate = dayjs(createdAt);
         const currentDate = dayjs();
@@ -350,11 +395,42 @@ export const QuizNotification = async (req, res) => {
 
                 if (getDifference(item.startTime) === '-4m') {
                     console.log('Time has reached of' + "-------" + item.courseId)
-                    pool.query('Select * from enrolled where courseId=?', [item.courseId], (e, r, f) => {
+                    pool.query('Select * FROM enrolled INNER JOIN user ON enrolled.userId= user.id where enrolled.courseId=?', [item.courseId], (e, r, f) => {
                         if (e) { console.log(e) }
                         if (r) {
+
                             r.forEach((v, i) => {
+
                                 let notificationText = item.quizTitle + ' quiz will start in 5 minutes ' + item.courseName + ' class'
+
+                                let transporter = nodemailer.createTransport({
+                                    service: 'gmail', // use SSL
+                                    auth: {
+                                        user: 'hamzamushtaq840@gmail.com',
+                                        pass: 'ksegtnxyhtiduybv'
+                                    }
+                                });
+
+                                // setup email data
+                                let mailOptions = {
+                                    from: '"E TESTING SERVICE" <hamzamushtaq.187@gmail.com>',
+                                    to: v.email, // list of receivers
+                                    subject: 'QUIZ ALERT', // Subject line
+                                    text: notificationText, // plain text body
+                                };
+
+
+                                transporter.sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                        return console.log(error);
+                                    }
+                                    if (info) {
+                                        //Do nothing
+                                        // console.log('Message sent: %s', info.messageId);
+                                    }
+                                });
+
+
                                 let type = 'quizTime'
                                 pool.query('Insert into notification (courseId,userId,notificationText,type) VALUES (?,?,?,?)', [item.courseId, v.userId, notificationText, type], (e, r, f) => {
                                     if (e) { console.log(e) }

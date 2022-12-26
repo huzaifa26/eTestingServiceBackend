@@ -49,7 +49,12 @@ export const addQuestionToPool = async (req, res) => {
         if (err)
             console.log(err)
         if (row) {
+            if (options.length === 0) {
+                res.status(200).send({ message: 'Quiz Created' })
+            }
             options.forEach((item, index) => {
+
+
                 if (item !== null) {
                     pool.query("INSERT INTO poolquestionoptions (poolquestionId,options) VALUES (?,?)", [row.insertId, item], (error, rows, fields) => {
                         if (error)

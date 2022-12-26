@@ -35,6 +35,7 @@ export const getAssignments = async (req, res) => {
         }
     })
 }
+
 export const editAssignment = async (req, res) => {
 
     const { id, courseId, fileUrl, fileName, fileType, title, startTime, endTime, totalMarks } = (req.body)
