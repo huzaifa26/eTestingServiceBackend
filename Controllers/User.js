@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import { pool } from '../index.js';
 
 export const updateUser = (req, res) => {

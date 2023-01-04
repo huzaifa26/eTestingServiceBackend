@@ -77,12 +77,14 @@ export const joinCourse = async (req, res) => {
     if (row) {
       if (row.length === 0) { res.status(400).send({ message: 'Wrong Key' }) }
       if (row.length > 0) {
-        pool.query("Insert into enrolled (courseId,userId,joinedTime) VALUES (?,?,?)", [row[0].id, userId, joinTime], (error, rows, field) => {
+        pool.query("Insert into enrolled (courseId,userId,joinedTime,blocked) VALUES (?,?,?,?)", [row[0].id, userId, joinTime, 0], (error, rows, field) => {
           if (error) {
+            console.log(error)
             if (error.code === 'ER_DUP_ENTRY') { res.status(401).send({ message: 'Duplicate' }) }
             else
-              console.log(err)
+              console.log("error: " + error);
           }
+          console.log(rows);
           if (rows) {
             if (rows.affectedRows === 1) { res.status(200).send({ message: 'success' }) }
             else { console.log("at joinCourse") }
