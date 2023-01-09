@@ -9,11 +9,18 @@ import { tokenList } from './AuthenticateToken.js';
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const queryUserExists = "SELECT * FROM `user` where `email`=? and verified=1";
+  const queryUserExists = "SELECT * FROM `user` where `email`=? ";
   pool.query(queryUserExists, [email], (err, row, field) => {
     if (row.length === 0) {
-      res.status(403).send({ user: 'Password is wrong' });
+      res.status(403).send({ user: 'User not found' });
       return;
+    }
+    if (row) {
+      console.log(row);
+      if (row[0].verified === 0) {
+        res.status(409).send({ user: 'Verify your email' });
+        return
+      }
     }
     const xyz = compareSync(password, row[0].pass);
     if (xyz) {

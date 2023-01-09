@@ -17,7 +17,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
-
 const createConnection = async () => {
   return new Promise((resolve, reject) => {
     resolve(mysql.createConnection({

@@ -7,7 +7,7 @@ import { createPoolCategory, getPoolCategory, addQuestionToPool, deletQuestion, 
 import { authenticateToken } from '../Controllers/AuthenticateToken.js';
 import { getUser, updateUser } from "../Controllers/User.js";
 import { refreshToken } from '../Controllers/AuthenticateToken.js';
-import { addQuizResult, addToTabFocus, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, getTabFocus, quiz, quizCancellResult, quizDelete, showQuizResult, QuizNotification } from '../Controllers/Quiz.js';
+import { addQuizResult, addToTabFocus, atempttedQuizQuestions, editQuiz, getAllQuizzes, getAtempttedQuizQuestions, getTabFocus, quiz, quizCancellResult, quizDelete, showQuizResult, QuizNotification, getAllResult } from '../Controllers/Quiz.js';
 import { deleteAssignment, editAssignment, getAssignmentResult, getAssignments, getStudentResult, submitAssignment, updateAssignmentResult, uploadAssignment } from '../Controllers/Assignment.js';
 import { Server } from "socket.io";
 
@@ -129,6 +129,7 @@ router.post('/quiz', authenticateToken, quiz)
 router.post('/editQuiz', authenticateToken, editQuiz)
 router.post('/quizDelete', authenticateToken, quizDelete)
 router.get("/getAllQuizzes/:courseId", authenticateToken, getAllQuizzes);
+router.get("/getAllResult/:quizId/:courseId/:quizPoints/:totalQuestions", authenticateToken, getAllResult);
 router.post("/atempttedQuizQuestions", authenticateToken, atempttedQuizQuestions)
 router.get("/getAtempttedQuizQuestions/:userId/:quizId", authenticateToken, getAtempttedQuizQuestions)
 router.post("/addQuizResult", authenticateToken, addQuizResult)

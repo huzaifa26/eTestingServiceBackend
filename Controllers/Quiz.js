@@ -450,3 +450,89 @@ export const QuizNotification = async (req, res) => {
 
 }
 
+export const getAllResult = async (req, res) => {
+    const { quizId, courseId, quizPoints, totalQuestions } = req.params
+    console.log(quizPoints);
+
+    pool.query('SELECT userId FROM enrolled WHERE courseId=?', [courseId], (err, row, field) => {
+        if (err)
+            console.log(err)
+        if (row) {
+            row.forEach((value, index) => {
+                pool.query('SELECT * from quizresult WHERE userId=? AND quizId=?', [value.userId, quizId], (err, rows, field) => {
+                    if (err)
+                        console.log(err)
+                    if (rows) {
+                        if (rows.length === 0) {
+                            let obtainedMarks = 0;
+                            let attemptedQuestions = 0;
+
+                            pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions,cancelled) VALUES (?,?,?,?,?,?,false)', [quizId, value.userId, quizPoints, obtainedMarks, attemptedQuestions, totalQuestions], (e, r, f) => {
+                                if (e) {
+                                    console.log(e)
+                                }
+                                if (r) {
+                                    //do nothing
+                                }
+                            })
+                        }
+                    }
+                    if (row.length === index + 1) {
+                        pool.query('SELECT quizresult.id,quizresult.quizId,quizresult.userId,quizresult.totalMarks,quizresult.obtainedMarks,quizresult.attemptedQuestions,quizresult.totalQuestions,user.fullName,user.email from quizresult INNER JOIN user ON quizresult.userId = user.id where quizresult.quizId=?', [quizId], (err, rowww, field) => {
+                            if (err)
+                                console.log(err)
+                            if (rowww) {
+                                rowww.forEach((value, inde) => {
+                                    pool.query('SELECT * FROM tabfocus WHERE userId=? AND quizId=?', [value.userId, quizId], (err, ro, field) => {
+                                        if (err)
+                                            console.log(err)
+                                        if (ro) {
+                                            rowww[inde].log = ro
+                                            if (rowww.length === inde + 1) {
+
+                                                rowww.forEach((abc, en) => {
+                                                    pool.query('SELECT attemptedquizquestions.id,attemptedquizquestions.userId,attemptedquizquestions.quizId,attemptedquizquestions.quizQuestionId,attemptedquizquestions.selectedOption,attemptedquizquestions.obtainedMarks,quizquestions.question,quizquestions.correctOption,quizquestions.questionType FROM attemptedquizquestions INNER JOIN quizquestions ON attemptedquizquestions.quizQuestionId = quizquestions.id WHERE attemptedquizquestions.userId=? AND attemptedquizquestions.quizId=?', [abc.userId, quizId], (err, roo, field) => {
+                                                        if (err)
+                                                            console.log(err)
+                                                        if (roo) {
+                                                            rowww[en].attemptedQuestions = roo
+                                                            if (rowww.length === inde + 1 && rowww.length === en + 1) {
+                                                                res.send(rowww)
+                                                            }
+                                                        }
+                                                    })
+
+
+                                                })
+
+                                            }
+                                        }
+                                    })
+
+                                })
+
+
+                            }
+                        })
+
+                    }
+                })
+
+            })
+        }
+    })
+
+
+
+
+
+
+    // pool.query('SELECT * FROM attemptedquizquestions WHERE userId=? AND quizId=?', [userId, quizId], (err, row, field) => {
+    //     if (err)
+    //         console.log(err)
+    //     if (row)
+    //         res.send(row)
+    // })
+
+    console.log(req.params);
+}
