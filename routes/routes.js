@@ -12,7 +12,7 @@ import { deleteAssignment, editAssignment, getAssignmentResult, getAssignments, 
 import { Server } from "socket.io";
 
 export const io = new Server({
-  //We can reach this server only on this localhost:3000
+  //We can reach this server only on localhost:3000
   cors: {
     origin: "http://localhost:3000"
   }
@@ -79,7 +79,6 @@ router.get('/', (req, res) => {
 
 cron.schedule('* * * * *', () => {
   QuizNotification()
-  // console.log('running a task every minute');
 });
 
 // AUTHENTICATION
