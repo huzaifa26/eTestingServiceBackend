@@ -17,6 +17,9 @@ export const uploadAssignment = async (req, res) => {
 
 export const getAssignments = async (req, res) => {
     pool.query('select * from assignment where courseId=?', req.params.courseId, (err, row, field) => {
+        if (row.length === 0) {
+            res.send({ data: row });
+        }
         for (let i = 0; i < row.length; i++) {
             pool.query("select * from submittedassignments where assignmentId=? and userId=?", [row[i].id, req.params.userId], (err, row1, field) => {
                 if (err) res.send(err)
