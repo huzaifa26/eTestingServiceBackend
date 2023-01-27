@@ -191,7 +191,7 @@ export const blockUserFromCourse = (req, res) => {
     if (error)
       console.log(error)
     if (row) {
-      let text = 'Your access was restricted in ' + row[0].courseName + ' class.'
+      let text = row[0].courseName+': Your access was restricted'
       pool.query('Insert into notification (courseId,userId,notificationText,type) VALUES(?,?,?,?)', [courseId, id, text, 'blocked'], (e, r, f) => {
         if (e)
           console.log(e)
@@ -219,7 +219,7 @@ export const unblockUserFromCourse = (req, res) => {
     if (error)
       console.log(error)
     if (row) {
-      let text = 'Your access was unrestricted in ' + row[0].courseName + ' class.'
+      let text = row[0].courseName+': Your access was unrestricted'
       pool.query('Insert into notification (courseId,userId,notificationText,type) VALUES(?,?,?,?)', [courseId, id, text, 'unblocked'], (e, r, f) => {
         if (e)
           console.log(e)
