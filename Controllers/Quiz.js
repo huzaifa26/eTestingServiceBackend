@@ -401,8 +401,7 @@ export const QuizNotification = async (req, res) => {
 
                             r.forEach((v, i) => {
 
-                                let notificationText = item.quizTitle + ' quiz will start in 5 minutes ' + item.courseName + ' class'
-
+                                let notificationText =  item.courseName + ": " + item.quizTitle + ' quiz will start in 5 minutes.'
                                 let transporter = nodemailer.createTransport({
                                     service: 'gmail', // use SSL
                                     auth: {
@@ -536,3 +535,70 @@ export const getAllResult = async (req, res) => {
 
     console.log(req.params);
 }
+
+
+
+
+
+
+
+
+// export const editQuiz = async (req, res) => {
+//     const { id, title, questionShuffle, answerShuffle, seeAnswer, copyQuestion, detectMobile, startTime, endTime, questions, totalPoints, courseId, userId } = (req.body);
+//     // const deleteQuestionToQuizQuery = "DELETE from quiz WHERE id=?";
+//     const addQuestionToQuizQuery = "UPDATE quiz set quizTitle=?,courseId=?,startTime=?,endTime=?,userId=?,questionShuffle=?,answerShuffle=?,seeAnswer=?,copyQuestion=?,detectMobile=?,totalPoints=? where id=?";
+
+//     pool.query(addQuestionToQuizQuery, [title, courseId, startTime, endTime, userId, questionShuffle, answerShuffle, seeAnswer, copyQuestion, detectMobile, totalPoints,id], (errr, roww, fields) => {
+//         if (errr) {
+//             console.log(errr);
+//             res.status(500).send({
+//                 success: 0,
+//                 message: 'Cannot Add Question to Pool',
+//                 err: errr
+//             });
+//         }
+
+//         if (roww) {
+//             questions.forEach((item, indexs) => {
+//                 pool.query("UPDATE quizquestions SET correctOption=?,isMathJax=?,questionType=?,question=?,questionImage=?,points=?,time=? where quizId=?", [item.correctOption, item.isMathJax, item.questionType, item.question, item.questionImage, item.points, item.time, item.quizId], (err, row, field) => {
+//                     if (err)
+//                         console.log(err)
+//                     if (row) {
+//                         let length = questions.length
+
+//                         if (item.options.length === 0) {
+//                             //do nothing
+//                             if (questions.length === indexs + 1) {
+//                                 res.status(200).send({ message: 'Quiz Created' })
+//                             }
+
+//                         }
+//                         else {
+//                             item.options.forEach((items, indexss) => {
+//                                 if (items !== null) {
+//                                     pool.query("UPDATE quizquestionoptions SET options=? where id=?", [items.options,items.id], (error, rows, fields) => {
+//                                         if (error) {
+//                                             console.log(error)
+//                                         }
+
+//                                         if (indexs === length - 1 && item.options.length - 1 === indexss) {
+//                                             res.status(200).send({ message: 'Quiz Created' })
+//                                         }
+//                                     })
+//                                 }
+//                                 else {
+//                                     if (indexs === length - 1 && item.options.length - 1 === indexss) {
+//                                         res.status(200).send({ message: 'Quiz Created' })
+//                                     }
+//                                 }
+//                             })
+//                         }
+//                     }
+//                 })
+//             })
+//         }
+//     })
+
+
+
+// }
