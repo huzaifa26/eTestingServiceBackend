@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import Jwt from 'jsonwebtoken';
 import dayjs from "dayjs";
-import { pool } from '../index.js';
+import {pool} from "../functions/api.js"
 import { getUsers, io } from '../routes/routes.js'
 import axios from 'axios'
 import nodemailer from 'nodemailer'

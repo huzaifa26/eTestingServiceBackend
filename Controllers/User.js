@@ -1,4 +1,4 @@
-import { pool } from '../index.js';
+import {pool} from "../functions/api.js"
 
 export const updateUser = (req, res) => {
     const { fullName, phoneNumber, userAddress, userImg } = req.body;

@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import Jwt from 'jsonwebtoken';
-import { pool } from '../index.js';
+import {pool} from "../functions/api.js"
 import { getUsers, io } from '../routes/routes.js'
 dotenv.config();
 

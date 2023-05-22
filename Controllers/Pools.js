@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import Jwt from 'jsonwebtoken';
-import { pool } from '../index.js';
+import {pool} from "../functions/api.js"
 dotenv.config();
 
 export const createPoolCategory = async (req, res) => {

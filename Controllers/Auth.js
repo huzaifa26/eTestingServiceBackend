@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { pool } from '../index.js';
+import {pool} from "../functions/api.js"
 import { genSaltSync, hashSync, compareSync } from 'bcrypt';
 import Jwt from 'jsonwebtoken';
 dotenv.config();
