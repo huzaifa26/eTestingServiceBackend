@@ -72,11 +72,6 @@ router.get('/', (req, res) => {
   });
 });
 
-// CRON SCHEDULE
-// cron.schedule('* * * * *', () => {
-//   console.log('running');
-// });
-
 cron.schedule('* * * * *', () => {
   QuizNotification()
 });

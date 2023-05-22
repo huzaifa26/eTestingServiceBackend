@@ -330,38 +330,27 @@ export const quizCancellResult = async (req, res) => {
     let obtainedMarks = 0;
     let totalMarks = 0;
     let attemptedQuestions = 0;
-
-    pool.query('SELECT * FROM quizquestions WHERE quizId=?', [quizId], (err, row, field) => {
-        if (err)
-            console.log(err)
-        if (row) {
-            totalQuestionsLength = row.length
-            row.forEach((value, index) => {
-                totalMarks += value.points
-            })
-            pool.query('SELECT obtainedMarks FROM attemptedquizquestions WHERE userId=? AND quizId=?', [userId, quizId], (error, rows, fields) => {
-                if (error)
-                    console.log(error)
-                if (rows) {
-                    attemptedQuestions = rows.length
-                    rows.forEach((value, index) => {
-                        obtainedMarks += (value.obtainedMarks)
-                    }
-                    )
-                    pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions,cancelled) VALUES (?,?,?,0,?,?,true)', [quizId, userId, totalMarks, attemptedQuestions, totalQuestionsLength], (e, r, f) => {
-                        if (e) {
-                            if (e.code === 'ER_DUP_ENTRY')
-                                res.status(200).send({ data: 'Already added' });
-                            else { console.log(e) }
-                        }
-                        if (r) {
-                            res.status(200).send({ data: 'Added' });
-                        }
-                    })
-                }
-            })
+    try {
+        let row = await pool.query('SELECT * FROM quizquestions WHERE quizId=?', [quizId])
+        totalQuestionsLength = row.length
+        row.forEach((value) => {
+            totalMarks += value.points
+        })
+        let rows = await pool.query('SELECT obtainedMarks FROM attemptedquizquestions WHERE userId=? AND quizId=?', [userId, quizId])
+        attemptedQuestions = rows.length
+        rows.forEach((value) => {
+            obtainedMarks += (value.obtainedMarks)
         }
-    })
+        )
+        let r = await pool.query('INSERT INTO quizresult (quizId,userId,totalMarks,obtainedMarks,attemptedQuestions,totalQuestions,cancelled) VALUES (?,?,?,0,?,?,true)', [quizId, userId, totalMarks, attemptedQuestions, totalQuestionsLength])
+        res.status(200).send({ data: 'Added' });
+    }
+    catch (e) {
+        if (e.code === 'ER_DUP_ENTRY')
+            res.status(200).send({ data: 'Already added' });
+        else { console.log(e) }
+
+    }
 }
 
 
@@ -371,10 +360,6 @@ export const QuizNotification = async (req, res) => {
         const firstDate = dayjs(createdAt);
         const currentDate = dayjs();
         const differenceInMinutes = currentDate.diff(firstDate, "minute");
-        const minutesInDay = 1440;
-        const minutesInWeek = 10080;
-        const minutesInMonth = 43800;
-        const minutesInYear = 525600;
 
         if (differenceInMinutes < 60) {
             return `${differenceInMinutes}m`;
@@ -401,7 +386,7 @@ export const QuizNotification = async (req, res) => {
 
                             r.forEach((v, i) => {
 
-                                let notificationText =  item.courseName + ": " + item.quizTitle + ' quiz will start in 5 minutes.'
+                                let notificationText = item.courseName + ": " + item.quizTitle + ' quiz will start in 5 minutes.'
                                 let transporter = nodemailer.createTransport({
                                     service: 'gmail', // use SSL
                                     auth: {

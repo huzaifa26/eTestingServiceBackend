@@ -5,23 +5,9 @@ export const tokenList = {}
 
 export function authenticateToken(req, res, next) {
   const authcookie = req.cookies.token;
-
-  // const { authorization } = req.headers;
-  // let authcookie1=undefined;
-  // if(authorization !== undefined){
-  //   authcookie1 = authorization.split(' ')[1];
-  // }
-
   let realCookie;
-
-  // if (authcookie === undefined){
-  //   realCookie=authcookie1
-  // } else {
   realCookie = authcookie;
-  // }
-
   if (realCookie == null) return res.sendStatus(401);
-
   Jwt.verify(realCookie, process.env.SECRETKEY, (err, user) => {
     if (err) {
       console.log(err);
